@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>课程管理系统学生模块首页</title>
+<link href="../../../webapp/static/css/stustyle.css" th:href="@{/static/css/stustyle.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../../webapp/static/css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../../webapp/static/js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../../webapp/static/js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+<script src="../../../webapp/static/js/adapter.js" th:src="@{/static/js/adapter.js}"></script> <!--rem适配js-->
+<link rel="stylesheet" href="../../../webapp/static/css/base.css" th:href="@{/static/css/base.css}"> <!--初始化文件-->
+<link rel="stylesheet" href="../../../webapp/static/css/menu.css" th:href="@{/static/css/menu.css}"> <!--主样式-->
+<script src="../../../webapp/static/js/menu.js" th:src="@{/static/js/menu.js}"></script> <!--rem适配js-->
+
+<style type="text/css">
+a:HOVER {
+	text-decoration: none;
+}
+</style>
+
+</head>
+<body style="margin: 0px;padding: 0px;">
+	<div id="mtop">
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid" style="height: 100px;">
+				<div class="navbar-header">
+					<div class="navbar-brand" style="margin-left: 80px;">
+						<span style="color: #7EC0EE;"><h2>fengwuJ</h2></span>
+					</div>
+					<div class="navbar-brand">
+						<span style="color: white;"><h2>Design</h2></span>
+					</div>
+				</div>
+				
+				<div style="width: 800;margin: 0 auto;position: relative;" id="myNavbar">
+					<ul>
+						<li style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span style="color: white;">首页</span></a></li>
+						<li style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span style="color: white;">介绍</span></a></li>
+						<li style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span style="color: white;">联系我们</span></a></li>
+					</ul>
+				</div>
+
+				<div style="float: right;padding-right: 10px;padding-top: 30px;">
+					<div style="float:left;display: none;"><input id="uid" th:value="${uid}"/></div>
+					<div style="float:left;"><span th:text="${uname}" style="color: #C9C9C9;"></span></div>
+					<div style="float:left;margin-left: 10px;"><button class="btn btn-link" type="button" style="border: 0;padding: 0;" id="logout" onclick="window.location.href='logout';">注销</button></div>
+				</div>
+			</div>
+		</nav>
+	</div>
+<div class="container">
+	<div class="row">
+		<div id="mleft" class="col-xs-3" style="height:600px;float: left;">
+			<div id="menu">
+				<!--隐藏菜单-->
+					<div id="ensconce">
+						<h2>
+							<img class="leftimg" src="../../../webapp/static/image/show.png" th:src="@{/static/image/show.png}" alt=""> 点击上方箭头展开
+						</h2>
+					</div>
+					<!--显示菜单-->
+					<div id="open">
+						<div class="navH">
+							课程小帮手 <span><img class="obscure leftimg" src="../../../webapp/static/image/obscure.png" th:src="@{/static/image/obscure.png}"
+								alt=""></span>
+						</div>
+						<div class="navBox">
+							<ul class="leftul">
+								<li>
+									<a href="javascript:void(0)" id="myCourse">
+										<h2 class="obtain" style="background: #53868B;">
+											我的课程<i></i>
+										</h2>
+									</a>
+								</li>
+								<li>
+									<h2 class="obtain">
+										个人信息<i></i>
+									</h2>
+									<div class="secondary">
+										<a href="javascript:void(0)" id="checkInfo">
+											<h3>查看个人信息</h3>
+										</a>
+										<a href="javascript:void(0)" id="changePassword">
+											<h3>修改密码</h3>
+										</a>
+									</div>
+								</li>
+								<li>
+									<h2 class="obtain">
+										我的作业<i></i>
+									</h2>
+									<div class="secondary">
+										<a href="javascript:void(0)" id="workRecord">
+											<h3>作业记录</h3>
+										</a>
+									</div>
+								</li>
+								<li>
+									<h2 class="obtain">
+										我的考试<i></i>
+									</h2>
+									<div class="secondary">
+										<a href="javascript:void(0)" id="examRecord">
+											<h3>考试记录</h3>
+										</a>
+										<a href="javascript:void(0)" id="exam">
+											<h3>在线考试</h3>
+										</a>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+			</div>
+		</div>
+		<div id="mright" class="col-xs-9">
+			<iframe src="../../../webapp/static/studentview/mCourse/mcourse.html" th:src="@{/static/studentview/mCourse/mcourse.html}" frameborder="0" width="100%;"height="600px;" id="myReplace" ></iframe>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript">
+		 $(function(){
+		 	//绑定监听事件
+		 	$('#myCourse').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mCourse/mcourse.html');
+		 	});
+		 	
+		 	$('#checkInfo').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mInfo/mInfo.html');
+		 	});
+		 	$('#changePassword').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mInfo/mChangePwd.html');
+		 	});
+		 	$('#workRecord').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mWork/mWorkRecord.html');
+		 	});
+		 	$('#examRecord').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mExam/mExamRecord.html');
+		 	});
+		 	$('#exam').click(function(){
+		 		$('#myReplace').attr('src','/static/studentview/mExam/mExam.html');
+		 	});
+		 });
+	</script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>注册页面</title>
+	<link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}">  
+	<script src="../static/js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+	<script src="../static/js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+	<link rel="stylesheet" href="../static/css/animations.css" th:href="@{/static/css/animations.css}"/>
+	<link rel="stylesheet" href="../static/css/register.css" th:href="@{/static/css/register.css}"/>
+	</head>
+	<body>
+		<div class="col-lg-4 col-center-block panel panel-default col-sm-4">
+			<div class="bs-example bs-example-form" role="form">
+				<h1 class="title">欢迎注册在线考试系统</h1>
+				<div class="input-group input-group">
+					<span class="input-group-addon">学号</span>
+					<input type="text" class="form-control id" placeholder="2015214xxx">
+				</div>
+				<br />
+				<div class="input-group input-group">
+					<span class="input-group-addon">姓名</span>
+					<input type="text" class="form-control name">
+				</div>
+				<br />
+				<div class="input-group input-group">
+					<span class="input-group-addon">密码</span>
+					<input type="password" class="form-control passwd" placeholder="密码长度为6-12位">
+				</div>
+				<br />
+				<div class="input-group input-group">
+					<span class="input-group-addon">确认密码</span>
+					<input type="password" class="form-control repasswd">
+				</div>
+				<h3 class="pswdAtten"></h3>
+				<div class="input-group submit col-lg-12 col-sm-12 col-xs-12">
+					<a href="login.html"><button class="btn-default btn-lg">返回登录</button></a>
+					<button class="btn-success btn-lg submitRgs">提交</button>
+				</div>
+			</div>
+		</div>
+		<script>
+			function Trim(str)
+			 { 
+			  return str.replace(/(^\s*)|(\s*$)/g, ""); 
+			}
+			 function randomClass()
+		{
+			var value=Math.round(Math.random()*34);
+			switch (value){
+				case 0:
+					return "pt-page-moveFromBottom";
+					break;
+				case 1:
+					return "pt-page-moveFromTop";
+					break;
+				case 2:
+					return "pt-page-moveFromLeft";
+					break;	
+				case 3:
+					return "pt-page-moveFromRight";
+					break;
+				case 4:
+					return "pt-page-moveFromLeftFade";
+					break;
+				case 5:
+					return "pt-page-moveFromRightFade";
+					break;
+				case 6:
+					return "pt-page-moveFromTopFade";
+					break;
+				case 7:
+					return "pt-page-moveFromBottomFade";
+					break;
+				case 8:
+					return "pt-page-scaleUpDown";
+					break;
+				case 9:
+					return "pt-page-scaleUpCenter";
+					break;
+				case 10:
+					return "pt-page-flipInLeft";
+					break;
+				case 11:
+					return "pt-page-flipInRight";
+					break;
+				case 12:
+					return "pt-page-flipInBottom";
+					break;
+				case 13:
+					return "pt-page-flipInTop";
+					break;
+				case 14:
+					return "pt-page-rotateInNewspaper";
+					break;
+				case 15:
+					return "pt-page-rotatePullRight";
+					break;
+				case 16:
+					return "pt-page-rotatePullLeft";
+					break;
+				case 17:
+					return "pt-page-rotatePullTop";
+					break;
+				case 18:
+					return "pt-page-rotatePullBottom";
+					break;
+				case 19:
+					return "pt-page-rotateUnfoldLeft";
+					break;
+				case 20:
+					return "pt-page-rotateUnfoldRight";
+					break;
+				case 21:
+					return "pt-page-rotateUnfoldTop";
+					break;
+				case 22:
+					return "pt-page-rotateUnfoldBottom";
+					break;
+				case 23:
+					return "pt-page-rotateRoomLeftIn";
+					break;
+				case 24:
+					return "pt-page-rotateRoomRightIn";
+					break;
+				case 25:
+					return "pt-page-rotateRoomTopIn";
+					break;
+				case 25:
+					return "pt-page-rotateRoomBottomIn";
+					break;
+				case 26:
+					return "pt-page-rotateCubeLeftIn";
+					break;
+				case 27:
+					return "pt-page-rotateCubeRightIn";
+					break;
+				case 28:
+					return "pt-page-rotateCubeTopIn";
+					break;
+				case 29:
+					return "pt-page-rotateCubeBottomIn";
+					break;
+				case 30:
+					return "pt-page-rotateCarouselLeftIn";
+					break;
+				case 31:
+					return "pt-page-rotateCarouselRightIn";
+					break;
+				case 32:
+					return "pt-page-rotateCarouselTopIn";
+					break;
+				case 33:
+					return "pt-page-rotateCarouselBottomIn";
+					break;
+				case 34:
+					return "pt-page-rotateSidesIn";
+					break;
+				default:
+					break;
+			}
+		}
+		$('body').addClass(randomClass());
+			$(".submitRgs").click(function(){
+				var id=$(".id").val();
+				var passwd=$(".passwd").val();
+				var repasswd=$(".repasswd").val();
+				var name=$(".name").val();
+				if(repasswd!=passwd)
+				{
+					$(".pswdAtten").html("密码不一致");
+					$(".pswdAtten").css("color","red");
+					return;
+				}else if(id==""||passwd==""||repasswd==""||name=="")
+				{
+					$(".pswdAtten").html("请输入完整信息");
+					$(".pswdAtten").css("color","red");
+					return;
+				}else if(passwd.length<6||repasswd.length<6||passwd.length>12||repasswd.length>12)
+				{
+					$(".pswdAtten").html("密码长度为6-12位");
+					$(".pswdAtten").css("color","red");
+					return;
+				}else{
+					$.ajax({
+						type:"post",
+						url:"main.jsp",
+						async:true,
+						data:{
+							"type":"register",
+							"id":id,
+							"passwd":passwd,
+							"name":name
+						},
+						success:function(result){
+							result=Trim(result);
+							if(result==1)
+							{
+								$(".pswdAtten").html("注册成功,2s后跳转");
+								$(".pswdAtten").css("color","white");
+								setTimeout(function(){
+									self.location='index.html';
+								},2000);
+							}else
+							{
+								$(".pswdAtten").html("账户已存在，无需注册");
+								$(".pswdAtten").css("color","red");
+							}
+						}
+					});
+				}
+				
+			})
+		</script>
+	</body>
+</html>

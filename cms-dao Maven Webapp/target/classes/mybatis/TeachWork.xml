@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.teacher.work.TeacherWorkMapper">
+    
+        <select id="searchWorkInfo" resultMap="getWorkInfo">
+            select * from work_info where tid = #{tid} and cid = #{cid}
+        </select>  
+
+		<select id="findCnameByCid" resultType="java.lang.String">
+            select name from course_info where id = #{cid}
+        </select>  
+        
+        <select id="searchTotalNumber" resultType="java.lang.Integer">
+            select count(*) from work_info where cid = #{cid} and tid = #{tid}
+        </select>
+		
+		<resultMap id="getWorkInfo" type="com.entity.work.WorkInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="workName" column="work_name"/>
+		  <result property="content" column="content"/>
+		  <result property="cid" column="cid"/>
+		  <result property="tid" column="tid"/>
+		</resultMap>
+		
+		<select id="checkMul" resultType="java.lang.Integer">
+			select count(*) from work_info where cid = #{cid} and tid = #{tid} and work_name = #{subTitle}
+		</select>
+		
+		<select id="findStuIds" resultType="java.lang.String">
+			select sid from tcs_relsp where cid = #{cid} and tid = #{tid}
+		</select>
+		
+		<insert id="insertWorkInfo">
+			insert into work_info(tid,cid,work_name,content) values(#{tid},#{cid},#{subTitle},#{subContent})
+		</insert>
+		
+		<insert id="insertWorkFile">
+			insert into work_file(tid,cid,status,work_name,sid) values(#{workFile.tid},#{workFile.cid},#{workFile.status},#{workFile.workName},#{workFile.sid})
+		</insert>
+		
+		<!-- 学生作业记录 -->
+		
+		<select id="searchStuWorkRecord" resultMap="getStuWorkRd">
+			select seq_number,sid,work_name,submit_time,status from work_file where cid = #{cid} and tid = #{tid} limit #{offset},#{pageSize}
+		</select>
+		
+		<resultMap id="getStuWorkRd" type="com.entity.pojo.teacher.workpojo.TSWorkRecord">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="sid" column="sid"/>
+		  <result property="title" column="work_name"/>
+		  <result property="time" column="submit_time"/>
+		  <result property="status" column="status"/>
+		</resultMap>
+		
+		<select id="searchStuWorkRecordTotalNum" resultType="java.lang.Integer">
+			select count(*) from work_file where cid = #{cid} and tid = #{tid}
+		</select>
+		
+		<select id="findWorkFileUrl" resultType="java.lang.String">
+			select file_url from work_file where tid = #{tid} and cid = #{cid} and sid = #{sid} and work_name = #{workName}
+		</select>
+		
+		<update id="updateCorrctTime">
+			update work_file set correct_time = #{corrctTime} where tid = #{tid} and cid = #{cid} and sid = #{sid} and work_name = #{workName}
+		</update>
+    </mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.student.exam.StuExamMapper">
+        
+        <!-- 考试记录处理 -->
+        
+        <select id="searchExamRecord" resultMap="getExamRecord">
+            select * from exam_record where sid = #{uid} limit #{offset},#{pageSize}
+        </select>  
+        
+         <select id="searchTotalNumber"  resultType="java.lang.Integer">
+            select count(*) from exam_record where sid = #{uid}
+        </select>  
+          
+        <resultMap id="getExamRecord" type="com.entity.exam.ExamRecord">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="goal" column="goal"/>
+		  <result property="time" column="time"/>
+		  <result property="sid" column="sid"/>
+		  <result property="cid" column="cid"/>
+		  <result property="cname" column="cname"/>
+		  <result property="tid" column="tid"/>
+		  <result property="tname" column="tname"/>
+		</resultMap>
+		
+		<!-- 在线考试处理 -->
+		<!-- 查询单选题 -->
+		<select id="getSingleChoice" resultMap="getSingleChoiceMap">
+            select * from exam_single_choice where exam_name = #{examName} limit #{currentPage},1
+        </select> 
+		
+		 <resultMap id="getSingleChoiceMap" type="com.entity.exam.ExamSingleChoice">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="title" column="title"/>
+		  <result property="aOption" column="a_option"/>
+		  <result property="bOption" column="b_option"/>
+		  <result property="cOption" column="c_option"/>
+		  <result property="dOption" column="d_option"/>
+		  <result property="rightChoice" column="right_choice"/>
+		</resultMap>
+		
+		<!-- 获取单选题总题目数 -->
+		<select id="getSCTotalPage" resultType="java.lang.Integer">
+            select count(*) from exam_single_choice where exam_name = #{examName}
+        </select> 
+		
+		<!-- 检查是否有考试 -->
+		<select id="findTCIdBySid" resultMap="findTCIdBySidMap">
+            select * from tcs_relsp where sid = #{sid}
+        </select> 
+        
+        <select id="findAnswerRecord" resultType="java.lang.Integer">
+            select count(*) from stu_exam_short_answer where sid = #{sid} and exam_name = #{examName}
+        </select> 
+		
+		 <resultMap id="findTCIdBySidMap" type="com.entity.tcsrelsp.TCSPojo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="tid" column="tid"/>
+		  <result property="cid" column="cid"/>
+		  <result property="sid" column="sid"/>
+		</resultMap>
+		
+		<select id="findExamCount" resultType="java.lang.Integer">
+            select count(*) from exam_info where cid = #{cid} and tid = #{tid} and status = #{status}
+        </select> 
+		
+		<select id="findExamName" resultType="java.lang.String">
+            select exam_name from exam_info where cid = #{cid} and tid = #{tid} and status = #{status}
+        </select> 
+		
+		
+		<select id="findExamShortAnswerByExamname" resultMap="findExamShortAnswerByExamnameMap">
+            select * from exam_short_answer where exam_name = #{examName}
+        </select> 
+		
+		<resultMap id="findExamShortAnswerByExamnameMap" type="com.entity.exam.ExamShortAnswer">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="title" column="title"/>
+		  <result property="answer" column="answer"/>
+		</resultMap>
+		
+		<!-- 查询单选题答案 -->
+		
+		<select id="findExamSingleChoice" resultType="java.lang.Character">
+            select right_choice from exam_single_choice where exam_name = #{examName}
+        </select> 
+		
+		<!-- 更新考试时间 -->
+		<update id="updateExamTime">
+			update exam_record set time = #{date} where exam_name = #{examName} and sid = #{sid}
+		</update>
+		
+		<insert id="insertSingleChoiceGoal">  
+        	insert into stu_exam_single_choice(exam_name,sid,single_choice_goal) values(#{examName},#{sid},#{choiceGoal})
+		</insert>
+		
+		<insert id="insertShortAnswer">  
+        	insert into stu_exam_short_answer(exam_name,sid,a1,a2,a3) values(#{sesaAnswer.examName},#{sesaAnswer.sid},#{sesaAnswer.a1},#{sesaAnswer.a2},#{sesaAnswer.a3})
+		</insert>
+		
+    </mapper>

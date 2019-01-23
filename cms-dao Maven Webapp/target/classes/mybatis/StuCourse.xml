@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.student.course.StuCourseMapper">
+        <select id="searchCourseInfo" resultMap="getCourseInfo">
+            select * from course_info where id in (select cid from stu_course_relsp where sid = #{id})
+        </select>  
+        <select id="searchTeacherInfo" resultMap="getTeacherInfo">
+            select * from teacher where id in (select tid from tcs_relsp where sid = #{sid} and cid = #{cid})
+        </select>  
+        
+         <select id="searchTotalNumber"  resultType="java.lang.Integer">
+            select count(*) from tcs_relsp where sid = #{sid} and cid = #{cid}
+        </select>  
+          
+          <select id="searchUnselectCourseInfo" resultMap="getCourseInfo">
+            select * from course_info where id 
+            in 
+            (select cid from stu_course_relsp where sid = #{id} and cid 
+            not in 
+            (select cid from tcs_relsp where sid = #{id}))
+        </select>  
+        
+        <select id="searchTeacherNames" resultMap="getTeacherInfo">
+            select * from teacher where id in (select tid from teach_course_relsp where cid = #{cid})
+        </select>  
+        
+        <insert id="insertCourse">
+			insert into tcs_relsp(sid, cid,tid) values (#{tcsRelsp.sid},#{tcsRelsp.cid},#{tcsRelsp.tid}) 
+		</insert>
+		
+		<select id="searchCourseFileStatus" resultType="java.lang.String">
+			select status from course_file where tid = #{tid} and cid = #{cid}
+		</select>
+		
+		<select id="findNameById" resultType="java.lang.String">
+			select name from course_info where id = #{cid}
+		</select>
+          
+        <resultMap id="getCourseInfo" type="com.entity.course.CourseInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		</resultMap>
+		
+		<resultMap id="getTeacherInfo" type="com.entity.userInfo.TeacherInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		  <result property="email" column="email"/>
+		  <result property="phoneNumber" column="phone_number"/>
+		</resultMap>
+    </mapper>

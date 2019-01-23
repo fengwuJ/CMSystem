@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script type="text/javascript">
+	var alreadyBind = 0;
+</script>
+<meta charset="UTF-8">
+<title>课程管理系统教师模块首页</title>
+<link href="../../css/teachersty.css" th:href="@{/static/css/teachersty.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../../webapp/static/css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../../webapp/static/js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../../webapp/static/js/jquery-accordion-menu.js" th:src="@{/static/js/jquery-accordion-menu.js}"></script>
+<script src="../../../webapp/static/js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+
+<!-- 引入左侧菜单样式 -->
+<link href="../../../webapp/static/css/jquery-accordion-menu.css" rel="stylesheet" th:href="@{/static/css/jquery-accordion-menu.css}" type="text/css" />
+<link href="../../../webapp/static/css/font-awesome.css" rel="stylesheet" th:href="@{/static/css/font-awesome.css}" type="text/css" />
+<link href="../../../webapp/static/css/mleftmenusty.css" rel="stylesheet" th:href="@{/static/css/mleftmenusty.css}" type="text/css" />
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		jQuery("#jquery-accordion-menu").jqueryAccordionMenu();
+	});
+	
+	$(function(){	
+		//顶部导航切换
+		$("#demo-list li").click(function(){
+			$("#demo-list li.active").removeClass("active")
+			$(this).addClass("active");
+		});	
+	});
+</script>
+</head>
+<body>
+	<div id="mtop">
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid" style="height: 100px;">
+				<div class="navbar-header">
+					<div class="navbar-brand" style="margin-left: 80px;">
+						<span style="color: #7EC0EE;"><h2>fengwuJ</h2></span>
+					</div>
+					<div class="navbar-brand">
+						<span style="color: white;"><h2>Design</h2></span>
+					</div>
+				</div>
+
+				<div style="width: 800;margin: 0 auto;position: relative;"
+					id="myNavbar">
+					<ul>
+						<li
+							style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span
+								style="color: white;">首页</span></a></li>
+						<li
+							style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span
+								style="color: white;">介绍</span></a></li>
+						<li
+							style="list-style: none;float: left;padding-left: 10%;padding-top: 30px;"><a><span
+								style="color: white;">联系我们</span></a></li>
+					</ul>
+				</div>
+
+				<div style="float: right;padding-right: 10px;padding-top: 30px;">
+					<div style="float:left;display: none;"><input id="uid" th:value="${uid}"/></div>
+					<div style="float:left;"><span th:text="${uname}" style="color: #C9C9C9;"></span></div>
+					<div style="float:left;margin-left: 10px;">
+						<button class="btn btn-link" type="button" style="border: 0;padding: 0;" id="logout" onclick="window.location.href='logout';">注销</button>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</div>
+	
+	<!-- 下方容器 -->
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-3">
+				<div class="content">
+					<div id="jquery-accordion-menu" class="jquery-accordion-menu">
+						<div class="jquery-accordion-menu-header" style="text-align: center;padding-top: 25px;"><h3>课程管理系统</h3></div>
+							<ul id="demo-list">
+							   <li><a href="indexC" id="currentCourse">当前课程</a></li>
+							   <li><a href="javascript:void(0)" class="submenu-indicator-minus">作业管理</a>
+									<ul class="submenu" style="display: block;">
+										<li><a href="/static/teacherview/mWork/submitWork.html">发布作业</a></li>
+										<li><a href="/static/teacherview/mWork/scanWork.html">批改作业</a></li>
+									</ul>
+								</li>
+								<li><a href="javascript:void(0)">课程管理</a>
+									<ul class="submenu">
+										<li><a href="/static/teacherview/mCourse/courseUpload.html">课件上传</a></li>
+										<li><a href="/static/teacherview/mCourse/courseDownload.html">课件下载</a></li>
+									</ul>
+								</li>
+								<li><a href="javascript:void(0)">考试管理</a>
+									<ul class="submenu">
+										<li><a href="/static/teacherview/mExam/submitExam.html">发布考试</a></li>
+										<li><a href="/static/teacherview/mExam/scanExam.html">批改试卷</a></li>
+									</ul>
+								</li>
+								<li><a href="/static/teacherview/mInfo/mInfo.html">个人信息</a>
+							</ul>
+						<div class="jquery-accordion-menu-header"></div>
+					</div>
+				</div>
+			</div>	<!-- 左侧拉栏结束 -->
+			<div class="col-xs-1"></div>	<!-- 占位区域结束 -->
+			<div class="col-xs-8">
+				<div id="mframeDiv">
+					<iframe frameborder="0" width="100%;"height="500px;" id="mreplace"></iframe>
+				</div>
+				<div id="bindIndex">
+					<!-- 这里是首页显示数据 -->
+					<div style="padding-top: 8px;padding-right: 15px;float: right;">
+						<button class="btn btn-info btn-sm" id="bindcourse">绑定课程</button>
+					</div>
+					<div class="cmtitle">绑定课程</div>
+					<div class="cmline"></div>
+					<div class="card">
+						<div style="text-align: center;" id="notbinddiv"><h2>您暂未绑定任何课程，请进行课程绑定</h2></div>
+						<div style="text-align: center;" id="binddiv"><h2>您绑定的课程是：<span id="coursename"></span><span id="courseid" style="display: none;"></span></h2></div>
+					</div>
+					
+					<!-- 绑定课程页面模态框 -->
+					<div class="modal fade" id="myModal"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog">
+					        <div class="modal-content">
+					          <div class="modal-header">
+					            <button id="closeModal" class="close" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					            <h4 class="modal-title">请选择你要绑定的课程</h4>
+					          </div>
+					          <div class="modal-body">
+					            <div class="btn-group" data-toggle="buttons" id="courseshow">
+					               <!--  
+								  <label class="btn btn-link ms" style="margin:20px;">
+								    <input type="radio" value="LOL">LOL<span style="display: none;"></span>
+								  </label>	 
+								  <label class="btn btn-link ms" style="margin:20px;">
+								    <input type="radio"  value="DOTA"> DOTA
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="WOW"> WOW
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="LOL">LOL
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="DOTA"> DOTA
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="WOW"> WOW
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="LOL">LOL
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="DOTA"> DOTA
+								  </label>
+								  <label class="btn btn-link ms" style="margin: 20px;">
+								    <input type="radio"  value="WOW"> WOW
+								  </label>
+								  -->
+								</div>	            
+					          </div>	<!-- modal-body结束 -->
+					          <div class="modal-footer">
+					            <button class="btn btn-primary" type="button" id="bindconfirm">确定</button>
+					          </div>
+					        </div><!-- /.modal-content -->
+					      </div><!-- /.modal-dialog -->
+					</div>
+					<!-- 首页显示数据结束 -->
+				</div>
+			</div>	<!-- 右侧替换区域结束 -->
+			
+		</div>	<!-- row结束 -->
+	</div>	<!-- container结束 -->
+	
+<!-- 绑定监听和div显示 -->
+<script type="text/javascript">
+	$("#mframeDiv").hide();
+</script>
+<!-- <script type="text/javascript">
+	var alreadBind = 0;
+	$(function(){
+		$("#mframeDiv").hide();
+		$('#currentCourse').click(function(){
+			$("#mframeDiv").hide();
+			$("#bindIndex").show();
+		});
+		$('#subWork').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#scanWork').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#uploadFile').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#downloadFile').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#subExam').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#scanExam').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+		$('#minfo').click(function(){
+			if(alreadBind == 1){
+				$("#mframeDiv").show();
+				$("#bindIndex").hide();
+				$('#mreplace').attr('src','/static/teacherview/mInfo/mInfo.html');
+			}else{
+				alert("您还未绑定课程操作课程，请首先进行绑定");
+				$('#currentCourse').click();
+			}
+		});
+	});
+</script>	 -->
+
+<!-- 首页绑定课程的逻辑和样式处理 -->
+<script type="text/javascript">
+	$(function(){
+		var selectCourseId;//用户选中的课程id
+		var selectCourseName;//用户选中的课程名
+		var selectFlag = false;//用户是否选中课程
+		//教师id
+		var uid = $("#uid").val();
+		//初始化课程数据
+		$.ajax({
+			url : "searchMyCourse", // 请求目标
+			type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+			data : {tid : uid},
+			dataType : 'json',
+			async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+			cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+			success : function(data) {
+				//var studentInfo = data["studentInfo"];
+				var mcourseList = data.list;
+				for(var mc in mcourseList){
+					var ele = '<label class="btn btn-link ms" style="margin:20px;"><input type="radio" value="'+mcourseList[mc].name+'">'+mcourseList[mc].name+'<span style="display: none;">'+mcourseList[mc].id+'</span></label>';
+					$("#courseshow").append(ele);
+				}
+				<!-- label选中样式 -->
+				$("label").on("click",function(){
+					$(".ms").addClass("btn-link");
+					$(this).removeClass("btn-link");
+					selectCourseName = $(this).find('input').val();
+					selectCourseId = $(this).find('span').text();
+					selectFlag = true;	//更改课程绑定状态绑定课程
+				});
+			}
+		});
+		
+		
+		<!--渲染模态框的显示，打开模态框-->
+		$("#bindcourse").click(function(){
+			<!--如果未绑定模块没隐藏，说明未绑定，确保每一个label都有btn-link-->
+			if($("#notbinddiv").is(":hidden") == false){
+				$('.ms').each(function(){
+					var mclass = "btn-link";
+					var classString = $(this).attr('class');
+					if(classString.indexOf(mclass) == -1){
+						$(this).addClass(mclass);	
+					}
+				});
+			}
+			
+			$("#myModal").modal('show');
+		});
+	
+		<!--未绑定数据，关闭模态框-->
+		$("#closeModal").click(function(){
+			if($("#courseid").text() != ""){
+				$('.ms').each(function(){
+					if($(this).find('span').text() == $("#courseid").text()){
+						$(this).click();
+					}
+				});
+			}
+			$("#myModal").modal('hide');
+		});
+	
+		<!-- 绑定成功后的界面刷新 -->
+		$("#notbinddiv").show();
+		$("#binddiv").hide();
+		$("#bindconfirm").click(function(){
+			if(selectFlag != true){
+				alert("您还未选中绑定课程");
+				return false;
+			}
+			alreadyBind = 1;
+			$("#myModal").modal("hide");
+			$("#notbinddiv").hide();
+			$("#coursename").text(selectCourseName);
+			$("#courseid").text(selectCourseId);
+			$("#binddiv").show();
+			
+		});
+		
+	});
+</script>
+</body>
+</html>

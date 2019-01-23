@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.UserMapper">
+        <select id="findPasswordByStuId" parameterType="java.lang.String" resultType="java.lang.String">
+            select password from stu_user where id = #{id} 
+        </select>  
+         <select id="checkExistByStuId" parameterType="java.lang.String" resultType="java.lang.Boolean">
+            <![CDATA[ select count(seq_number) from stu_user where id = #{id}  ]]> 
+        </select>  
+         <select id="findPasswordByTeachId" parameterType="java.lang.String" resultType="java.lang.String">
+            select password from teach_user where id = #{id} 
+        </select>   
+         <select id="checkExistByTeachId" parameterType="java.lang.String" resultType="java.lang.Boolean">
+           <![CDATA[ select count(seq_number) from teach_user where id = #{id}  ]]> 
+        </select>  
+        
+        <select id="findStudentNameById" parameterType="java.lang.String" resultType="java.lang.String">
+            select name from student where id = #{id}
+        </select>   
+        
+        <select id="findTeacherNameById" parameterType="java.lang.String" resultType="java.lang.String">
+            select name from teacher where id = #{id}
+        </select> 
+        
+        <select id="getMyCourse" resultMap="getMyCourseMap">
+            select * from course_info where id in (select cid from teach_course_relsp where tid = #{tid})
+        </select> 
+        
+        <resultMap id="getMyCourseMap" type="com.entity.course.CourseInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		</resultMap>
+        
+    </mapper>

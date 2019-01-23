@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.student.work.StuWorkMapper">
+    
+    	<select id="searchTemp"  resultMap="getTCSTemp">
+        	select * from tcs_relsp where sid = #{sid}
+        </select>  
+    
+        <select id="searchWorkInfo" resultMap="getWorkInfo">
+        	select * from work_info where tid = #{tid} and cid = #{cid}
+        </select>  
+        
+         <select id="searchWorkFile"  resultMap="getWorkFile">
+            select * from work_file where sid = #{sid} and work_name = #{workName} and cid = #{cid} and tid = #{tid}
+        </select>  
+        
+        <select id="searchTotalNumber"  resultType="java.lang.Integer">
+            select count(*) from work_info where tid = #{tid} and cid = #{cid}
+        </select>  
+        
+        <select id="findCnameByCid"  resultType="java.lang.String">
+        	select name from course_info where id = #{cid}
+        </select>  
+        
+        <select id="findTnameByTid"  resultType="java.lang.String">
+        	select name from teacher where id = #{tid}
+        </select>  
+        
+        <update id="updateWorkFile">
+        	update work_file set file_url = #{url},submit_time = #{submitTime},status = #{status} 
+        	where 
+        	sid = #{sid} and tid = #{tid} and cid = #{cid} and work_name = #{workName} 
+        </update>
+          
+        
+        <resultMap id="getWorkFile" type="com.entity.work.WorkFile">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="fileUrl" column="file_url"/>
+		  <result property="submitTime" column="submit_time"/>
+		  <result property="correctTime" column="correct_time"/>
+		  <result property="sid" column="sid"/>
+		  <result property="cid" column="cid"/>
+		  <result property="tid" column="tid"/>
+		  <result property="status" column="status"/>
+		  <result property="workName" column="work_name"/>
+		  
+		</resultMap>
+          
+        <resultMap id="getWorkInfo" type="com.entity.work.WorkInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="workName" column="work_name"/>
+		  <result property="content" column="content"/>
+		  <result property="cid" column="cid"/>
+		  <result property="tid" column="tid"/>
+		  
+		</resultMap>
+		
+		<resultMap id="getTCSTemp" type="com.entity.tcsrelsp.TCSPojo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="sid" column="sid"/>
+		  <result property="cid" column="cid"/>
+		  <result property="tid" column="tid"/>
+		  
+		</resultMap>
+		
+    </mapper>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>修改个人密码</title>
+<link href="../../css/stustyle.css" th:href="@{/static/css/stustyle.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+
+<script type="text/javascript">
+	//是否含有中文（也包含日文和韩文）
+	function isChineseChar(str){   
+	   var reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+	   return reg.test(str);
+	}
+	//同理，是否含有全角符号的函数
+	function isFullwidthChar(str){
+	   var reg = /[\uFF00-\uFFEF]/;
+	   return reg.test(str);
+	} 
+	$(function(){
+		var uid = $("#uid",parent.document).val();
+		var oldPwd;
+		var newPwd;
+		var confirmPwd;
+		$("#oldPwd").blur(function(){
+			oldPwd = $(this).val();
+			$.ajax({
+				url : "checkPwssword", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				data : {
+					sid : uid,oldPwd:oldPwd
+				},
+				dataType : 'text',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					if(data == "旧密码输入正确"){
+						alert(data);
+					}else{
+						$("#oldPwd").val("");
+						alert(data);
+					}
+				}
+			});
+		});
+		
+		
+		$("#savePwd").click(function(){
+			newPwd = $("#newPwd").val();
+			confirmPwd = $("#confirmPwd").val();
+			oldPwd = $("#oldPwd").val();
+			//检验密码长度
+			if(newPwd.length < 6){
+				alert("新密码长度至少6位");
+				return false;
+			}
+			//检验中文
+			if(isChineseChar(newPwd)){
+				alert("新密码不能带有中文");
+				return false;
+			}
+			//检验全角符号
+			if(isFullwidthChar(oldPwd)){
+				alert("新密码带有全角符号，请重新输入");
+				return false;
+			}
+			//验证新密码和旧密码是否一致
+			if(newPwd == oldPwd){
+				alert("新密码与旧密码一致，请重新输入");
+				return false;
+			}
+			//验证两次新密码输入是否一致
+			if(newPwd != confirmPwd){
+				alert("两次密码输入不一致，请重新输入");
+				return false;
+			}
+			if(oldPwd != "" && confirmPwd != "" && newPwd != ""){
+				$.ajax({
+					url : "updatePwssword", // 请求目标
+					type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {
+						sid : uid,newPwd:newPwd
+					},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						alert(data);
+						$("#logout",parent.document).click();
+					}
+				});
+			}else{
+				alert("请输入完整信息");
+				return false;
+			}
+		});
+	});
+</script>
+
+</head>
+<body>
+	<div class="cmtitle">修改密码</div>
+	<div class="cmline"></div>
+	<div style="width: 200px;margin: 0px auto;padding-top: 20px;">
+		<div>旧密码：<input class="form-control" type="password" placeholder="密码长度至少大于6位" id="oldPwd"/></div><br>
+		<div>新密码：<input class="form-control" type="password" placeholder="密码长度至少大于6位" id="newPwd"/></div><br>
+		<div>确认密码：<input class="form-control" type="password" placeholder="密码长度至少大于6位" id="confirmPwd"/></div><br>
+		<div style="width: 80px;margin: 0px auto;margin-top: 30px;"><button class="btn btn-primary" id="savePwd">确认修改</button></div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>我的课程</title>
+<link href="../../css/stustyle.css" th:href="@{/static/css/stustyle.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+<!-- bootstrap-table.min.js -->
+<script src="../../js/bootstrap-table.min.js" th:src="@{/static/js/bootstrap-table.min.js}"></script>
+<!-- 引入中文语言包 -->
+<script src="../../js/bootstrap-table-zh-CN.min.js" th:src="@{/static/js/bootstrap-table-zh-CN.min.js}"></script>
+
+<script type="text/javascript">
+	$(function(){
+		//获取学生id
+		var uid = $("#uid",parent.document).val();
+		var cid = "0";
+		var tid = "0";
+		//添加课程
+		$("#addcourse").click(function(){
+			//初始化模态框内容
+			cid = "0";
+			tid = "0";
+			
+			//打开模态框
+			$("#myModal").modal('show');
+			
+			$("#selectCourse").empty();
+			$("#selectCourse").append('<option value="0" selected="selected">请选择课程</option>');
+			$("#selectTeacher").empty();
+			$("#selectTeacher").append('<option value="0" selected="selected">请选择教师</option>');
+			
+			//获取课程数据
+			$.ajax({
+				url : "searchUnselectCourse", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				data:{sid:uid},
+				dataType:'json',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					var couseNames = data["courseNameList"];
+					for(var cn in couseNames){
+						var appendEle = "<option value='"+couseNames[cn].courseId+"'>"+couseNames[cn].courseName+"</option>"
+						$("#selectCourse").append(appendEle);
+					}
+				}
+			});
+
+			//监听课程下拉框更改事件
+			$("#selectCourse").change(function() {
+				
+				cid = $(this).val();
+				tid = "0";
+				$("#selectTeacher").empty();
+				$("#selectTeacher").append('<option value="0" selected="selected">请选择教师</option>');
+				if(cid != "0"){
+					//获取教师数据
+					$.ajax({
+						url : "searchTeacher", // 请求目标
+						type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+						data:{cid:cid},
+						dataType:'json',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							$("#selectTeacher").empty();
+							$("#selectTeacher").append('<option value="0" selected="selected">请选择教师</option>');
+							var teacherNames = data["teacherNameList"];
+							for(var tn in teacherNames){
+								var appendEle = "<option value='"+teacherNames[tn].teacherId+"'>"+teacherNames[tn].teacherName+"</option>"
+								$("#selectTeacher").append(appendEle);
+							}
+						}
+					});
+				}
+				
+				$("#selectTeacher option[value='0']").text("请首先选择课程");
+				
+			});
+			
+			//监听教师下拉框更改事件
+			$("#selectTeacher").change(function() {
+				tid = $(this).val();
+			});
+			
+			//模态框提交数据选课数据
+			$("#msubmit").click(function(){
+				if(cid != "0" && tid != "0"){
+					//获取教师数据
+					$.ajax({
+						url : "insertCourse", // 请求目标
+						type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+						data:{cid:cid,sid:uid,tid:tid},
+						dataType:'text',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							alert(data);
+						}
+					});
+				
+					$("#myModal").modal("hide");
+					
+			
+				}else{
+					alert("请选择相关数据");	
+				}
+	
+			});
+
+		});
+	});
+</script>
+
+</head>
+<body style="width: 100%;">
+	<div style="padding-top: 8px;padding-right: 15px;float: right;">
+		<button class="btn btn-info btn-sm" id="addcourse">添加新课程</button>
+	</div>
+	
+	<div class="modal fade" id="myModal"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false">
+	<div class="modal-dialog">
+	        <div class="modal-content">
+	          <div class="modal-header">
+	            <button data-dismiss="modal" class="close" type="button"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+	            <h4 class="modal-title">添加课程</h4>
+	          </div>
+	          <div class="modal-body">
+	            <p><h3>课程名</h3></p>
+	             <select name="selectCourse" id="selectCourse" class="form-control">   
+			        <option value="0" selected="selected">请选择课程</option>    
+			      </select>
+			     <p><h3>老师名</h3></p>   
+			     <select name="selectTeacher" id="selectTeacher" class="form-control">   
+			        <option value="0">请首先选择课程</option>       
+			      </select>
+	          </div>
+	          <div class="modal-footer">
+	            <button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+	            <button class="btn btn-primary" type="button" id="msubmit">提交</button>
+	          </div>
+	        </div><!-- /.modal-content -->
+	      </div><!-- /.modal-dialog -->
+	</div>
+	
+	<div class="cmtitle">我的课程</div>
+	<div class="cmline"></div>
+	<div style="margin-top:50px;">
+		<table id="table">
+		</table>
+		<script>
+			$("#table").bootstrapTable('destroy'); 
+					$("#table").bootstrapTable({ // 对应table标签的id
+					      url: "searchCourse", // 获取表格数据的url
+					      cache: false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
+					      striped: true,  //表格显示条纹，默认为false
+					      pagination: true, // 在表格底部显示分页组件，默认false
+					      pageList: [1, 2], // 设置页面可以显示的数据条数
+					      pageSize: 1, // 页面数据条数
+					      pageNumber: 1, // 首页页码
+					      sidePagination: 'server', // 设置为服务器端分页
+					      queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+					
+					          return {
+					              pageSize: params.limit, // 每页要显示的数据条数
+					              offset: params.offset, // 每页显示数据的开始行号
+					              sort: params.sort, // 要排序的字段
+					              sortOrder: params.order, // 排序规则
+					              id:$("#uid",parent.document).val(),
+					          }
+					      },
+					      sortName: 'cid', // 要排序的字段
+					      sortOrder: 'desc', // 排序规则
+					      columns: [
+					          {
+					              field: 'cid', // 返回json数据中的name
+					              title: '课程号', // 表格表头显示文字
+					              align: 'center', // 左右居中
+					              valign: 'middle' // 上下居中
+					          }, {
+					              field: 'cname',
+					              title: '课程名称',
+					              align: 'center',
+					              valign: 'middle'
+					          }, {
+					              field: 'tname',
+					              title: '教师',
+					              align: 'center',
+					              valign: 'middle'
+					          },{
+					              field: 'status',
+					              title: '课件状态',
+					              align: 'center',
+					              valign: 'middle'
+					          }, {
+					          	
+					              title: "操作",
+					              align: 'center',
+					              valign: 'middle',
+					              width: 160, // 定义列的宽度，单位为像素px
+					              formatter: function (value, row, index) {
+					              	var cz;
+					              	if(row.status == "缺失"){
+					              		cz = "<span>待上传</span>"
+					              	}else{
+					              		cz = '<a href="javascript:void(0)" class="msub">下载课件</a>'
+					              	}
+					                  return cz;
+					              },
+					              events: operateEvents = {"click .msub":function(e,value,row,index){
+								        var url = "downloadCourseFile";
+										var form = $("<form></form>").attr("action", url).attr("method", "post").attr('style', 'display:none');
+										form.append($("<input></input>").attr("type", "hidden").attr("name", "tid").attr("value", row.tid));
+										form.append($("<input></input>").attr("type", "hidden").attr("name", "cid").attr("value", row.cid));
+										form.appendTo('body').submit().remove();
+							    	  }
+							      },  			              
+					          }
+					          
+					      ],
+					      onLoadSuccess: function(){  //加载成功时执行
+					            console.info("加载成功");
+					      },
+					      onLoadError: function(){  //加载失败时执行
+					            console.info("加载数据失败");
+					      }
+					})		
+				</script>
+	</div>
+</body>
+</html>

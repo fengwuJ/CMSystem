@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>上传课件</title>
+<link href="../../css/teachersty.css" th:href="@{/static/css/teachersty.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div class="cmtitle">课件上传</div>
+	<div class="cmline"></div>
+	<div class="card">
+		<div>
+			<div class="panel panel-info" style="width: 50%;margin: 0px auto;margin-top: 5%;">
+			  <div class="panel-heading">课件状态：<span id="status"></span></div>
+			  <div class="panel-body">
+			    <div style="padding-top: 5%;"><span style="font-weight: bold;">课程编号：&nbsp;&nbsp;&nbsp;</span><span id="cid"></span></div>
+			    <div style="padding-top: 5%;"><span style="font-weight: bold;">课程名称：&nbsp;&nbsp;&nbsp;</span><span id="cname"></span></div>
+			    <div style="padding-top: 5%"><span style="font-weight: bold;">上传课件：</span></div>
+			    <div style="padding-top: 5%">
+			    	<form id="fileForm" enctype="multipart/form-data">
+			    		<input id="lefile" type="file" name="file" style="display:none" required="required" accept="application/pdf" >  
+					</form>
+					<div class="input-append">  
+					    <input id="photoCover" class="input-large" type="text" disabled="disabled" style="height:30px;">  
+					    <a class="btn" onclick="$('input[id=lefile]').click();">浏览</a>  
+					</div>  
+			    </div>
+			  </div>
+			  <div class="panel-footer">
+			  	<div style="padding-left:40%; ">
+			  		<button class="btn btn-primary" id="uploadFile">确定上传</button>
+			  	</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	
+<script type="text/javascript">  
+	$(function(){
+		var uid = $("#uid",parent.document).val();
+		var cid = $("#courseid",parent.document).text();
+		var SubOK = false;
+		//获取课件状态
+		$.ajax({
+			url : "searchCourseFile", // 请求目标
+			type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+			data : {tid : uid,cid:cid},
+			dataType : 'json',
+			async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+			cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+			success : function(data) {
+				var courseFile = data.courseFile;
+				$("#cid").text(courseFile.cid);
+				$("#cname").text(courseFile.cname);
+				$("#status").text(courseFile.status);
+			}
+		});
+			
+		$('input[id=lefile]').change(function() {  
+			$('#photoCover').val($(this).val());  
+			//检测是否为pdf文件 
+			var fileName = $('#photoCover').val();
+			var temp = fileName.split('.');
+			var culs = temp[temp.length-1];
+			if(culs != 'pdf'){
+				alert("只能上传pdf文件");
+				return false;
+			}
+			//检测文件名是否存在
+			var fNameTemp = fileName.split('\\');
+			var fname = fNameTemp[fNameTemp.length-1];
+			
+			$.ajax({
+				url : "checkCFileExsist", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				data : {tid : uid,cid:cid,fileName : fname},
+				dataType : 'text',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					if(data == "OK"){
+						SubOK = true;
+						alert("可以上传该文件");
+					}else{
+						alert("该文件已存在");
+						SubOK = false;
+					}
+				}
+			});
+			
+		});  
+		
+		$('#uploadFile').click(function(){
+			
+			if($('#photoCover').val() == ""){
+				alert("请选择文件");
+			}
+			
+			if(SubOK == false){
+				return false;
+			}
+			
+			var fileInfo = new FormData($('#fileForm')[0]);
+			fileInfo.append('tid', uid);
+			fileInfo.append('cid',cid);
+			$.ajax({
+				url : "uploadCourseFile", // 请求目标
+				type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+				data : fileInfo,
+				processData : false, 
+				contentType : false, 
+				contentType:false,
+				dataType : 'text',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					alert(data);
+				}
+			});
+		});
+		
+		
+	});
+</script>  
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>发布考试</title>
+<style type="text/css">
+
+#scShow>tr>td{
+	line-height: 45px;
+}
+#scShow>tr>td>a{
+	line-height: 45px;
+	padding: 0px;
+	font-size: 14px;
+	text-decoration:none;
+}
+
+#swShow>tr>td{
+	line-height: 45px;
+}
+#swShow>tr>td>a{
+	line-height: 45px;
+	padding: 0px;
+	font-size: 14px;
+	text-decoration:none;
+}
+</style>
+<link href="../../css/teachersty.css" th:href="@{/static/css/teachersty.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+<!-- bootstrap-table.min.js -->
+<script src="../../js/bootstrap-table.min.js" th:src="@{/static/js/bootstrap-table.min.js}"></script>
+<!-- 引入中文语言包 -->
+<script src="../../js/bootstrap-table-zh-CN.min.js" th:src="@{/static/js/bootstrap-table-zh-CN.min.js}"></script>
+<script type="text/javascript">
+	function removeTr(ele){
+		ele.parent().parent().remove();
+	}
+	
+	function addExam(tid,cid,examTitle,scTbody,swTbody){
+		var flag = false;
+		var singleCount = scTbody.find("tr").length;
+		var writeCount = swTbody.find("tr").length;
+		if(singleCount == 9 && writeCount == 3){
+			flag = true;
+		}else{
+			alert("只能出9道选择题和3道简答题");
+		}
+		if(flag){
+			//开始搜集数据
+			//获取单选题题目
+			var scArray = new Array();
+			var scTrs = scTbody.children("tr");
+			for(var i = 0; i < scTrs.length; i++){
+				var tds = scTrs.eq(i).find("td");
+				scArray[i] = tds.eq(0).html();
+			}
+			
+			//获取简答题题目
+			var swArray = new Array();
+			var swTrs = swTbody.children("tr");
+			for(var i = 0; i < swTrs.length; i++){
+				var tds = swTrs.eq(i).find("td");
+				swArray[i] = tds.eq(0).html();
+			}
+			
+			//执行提交
+			$.ajax({
+				url : "insertExam", // 请求目标
+				traditional:true,
+				type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+				data : {tid:tid,cid:cid,examName:examTitle.val(),scArray:scArray,swArray:swArray},
+				dataType : 'text',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					alert(data);
+					examTitle.val('');
+					scTbody.html('');
+					swTbody.html('');
+				}
+			});
+			
+			
+		}
+		
+	}
+
+	$(function(){
+		var tid = $("#uid",parent.document).val();
+		var cid = $("#courseid",parent.document).text();
+		//加载单选题记录tab
+		$('#myTab a[href="#singlselectW"]').tab('show');
+		var mIndex = 0;  //0 表示单选题,1表示简答题
+		$("#addToSubjectStore").click(function(){
+			mIndex = 0;
+			$("input[name='res']").click();
+			$('#addSubjectModal').modal('show');
+			$('#myAddSubTab a[href="#addSingleSub"]').tab('show');
+		});
+		
+		$("ul.selectFlag").on("click","li",function(){
+			//获取当前点击a标签的值
+			var mHref = $(this).find("a").eq(0).attr('href');
+			if('#addWriteSub' == mHref){
+				mIndex = 1;
+			}else{
+				mIndex = 0;
+			}
+		});
+		
+		//添加到题库模态框的确认提交按钮
+		$("#addSubjectConfirm").click(function(){
+			//用于提交数据
+			//判断mIndex的值，0:提交单选题数据   1：提交简答题数据
+			//先提交成功，再隐藏，再清空
+			
+			if(mIndex == 0){
+				//提交单选题
+				var singleTitle = $("textarea[name='singleTitle']").val();
+				var a = $("input[name='aOption']").val();
+				var b = $("input[name='bOption']").val();
+				var c = $("input[name='cOption']").val();
+				var d = $("input[name='dOption']").val();
+				var rightChoice = $("input[name=answer]:checked").val();
+				if(a == '' || b == '' || c == '' || d == '' || singleTitle == ''){
+					alert("请完善题目信息");
+					return false;
+				}
+				if(rightChoice == null){
+					alert("请选择正确答案");
+					return false;
+				}
+				
+				$.ajax({
+					url : "insertSingleChoice", // 请求目标
+					type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {singleTitle:singleTitle,aOption:a,bOption:b,cOption:c,dOption:d,rightChoice:rightChoice},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						alert(data);
+						$("#addSubjectModal").modal("hide");
+					}
+				});
+				
+			}else{
+				//提交多选题
+				var shortTitle = $("textarea[name='shortTitle']").val();
+				var shortAnswer =  $("textarea[name='shortAnswer']").val();
+				
+				if(shortTitle == '' || shortAnswer == ''){
+					alert("请填写完整信息");
+					return false;
+				}
+				
+				$.ajax({
+					url : "insertShortAnswer", // 请求目标
+					type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {shortTitle:shortTitle,shortAnswer:shortAnswer},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						alert(data);
+						$("#addSubjectModal").modal("hide");
+					}
+				});
+				
+			}
+			
+		});
+
+		
+		//提交试卷按钮
+		$("#submitExam").click(function(){
+			//检测重名
+			var examTitleValue = $("#examTitle").val();
+			if(examTitleValue != ''){
+				//检查是否重名
+				$.ajax({
+					url : "checkExamTitleExist", // 请求目标
+					type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {
+						examTitle:examTitleValue
+					},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						if(data == "true"){
+							alert("该试卷已存在，请重新命名");
+							$("#examTitle").val("");
+						}else{
+							addExam(tid,cid,$("#examTitle"),$("#scShow"),$("#swShow"));
+						}
+					}
+				});
+			}
+		});
+		
+		//打开单选题选题,初始化题目
+		$('#openSingle').click(function(){
+			$("#SCContainer").empty();
+			$.ajax({
+				url : "getSingles", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				dataType : 'json',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					var list = data.list;
+					for(var row in list){
+						var element = '<div class="input-group" style="margin: 5px;"><span class="input-group-addon"><input type="checkbox" value="'+list[row].rightChoice+'"/></span><input type="text" class="form-control" disabled="disabled" style="overflow: hidden;text-overflow:ellipsis;white-space: nowrap;" value="'+list[row].title+'"/></div>'
+						$("#SCContainer").append(element);
+					}
+				}
+			});
+			
+			$("#singleModal").modal('show');
+		});
+			
+			
+		//打开简答题选题,初始化题目
+		$('#openWrite').click(function(){
+			$("#WAContainer").empty();
+			$.ajax({
+				url : "getWrites", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				dataType : 'json',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					var list = data.list;
+					for(var row in list){
+						var element = '<div class="input-group" style="margin: 5px;"><span class="input-group-addon"><input type="checkbox" value="'+list[row].answer+'"/></span><input type="text" class="form-control" disabled="disabled" style="overflow: hidden;text-overflow:ellipsis;white-space: nowrap;" value="'+list[row].title+'"/></div>'
+						$("#WAContainer").append(element);
+					}
+				}
+			});
+			$("#writeModal").modal('show');
+		});
+			
+		//添加单选题
+		$("#addToSingle").click(function(){
+			var singles = new Array();
+			//获取模态框选中的元素，将信息存入数组
+			$("#SCContainer input:checkbox:checked").each(function(){
+				var object = {};
+				object.rightChoice = $(this).val();
+				object.title = $(this).parent(".input-group-addon").next().val();
+				singles.push(object);
+			});
+			
+			//遍历数组，生成table
+			for(var single in singles){
+				var trEle = '<tr><td style="text-overflow:ellipsis;white-space: nowrap;overflow: hidden;">'+singles[single].title+'</td><td style="text-align:center">'+singles[single].rightChoice+'</td><td style="text-align:center">'+'<a href="javascript:void(0)" onclick="removeTr($(this))">删除</>'+'</td></tr>'
+				$("#scShow").append(trEle);	
+			}
+			
+			$("#singleModal").modal('hide');
+			
+		});
+		
+		
+		
+		//添加简答题
+		$("#addToWrite").click(function(){
+			var writes = new Array();
+			//获取模态框选中的元素，将信息存入数组
+			$("#WAContainer input:checkbox:checked").each(function(){
+				var object = {};
+				object.answer = $(this).val();
+				object.title = $(this).parent(".input-group-addon").next().val();
+				writes.push(object);
+			});
+			
+			//遍历数组，生成table
+			for(var write in writes){
+				//alert(writes[write].answer);
+				var trEle = '<tr><td style="text-overflow:ellipsis;white-space: nowrap;overflow: hidden;">'+writes[write].title+'</td><td style="text-overflow:ellipsis;white-space: nowrap;overflow: hidden;">'+writes[write].answer+'</td><td style="text-align:center">'+'<a href="javascript:void(0)" onclick="removeTr($(this))">删除</>'+'</td></tr>'
+				
+				$("#swShow").append(trEle);
+			}
+			
+			$("#writeModal").modal('hide');
+		});
+
+	});
+</script>
+<!-- 
+<div class="input-group" style="margin: 5px;">
+	<span class="input-group-addon"><input type="checkbox"/></span>
+    <input type="text" class="form-control" disabled="disabled" style="overflow: hidden;text-overflow:ellipsis;white-space: nowrap;"/>
+</div>
+ -->
+</head>
+<body>
+	<div class="cmtitle">发布考试</div>
+	<div class="cmline"></div>
+	<div class="card">
+		<!-- 单选题、多选题切换卡 -->
+		<div class="container" style="padding-top: 1%;">
+			<div class="row">
+				<div class="col-xs-4">
+					<ul id="myTab" class="nav nav-tabs">
+					   <li>
+					      <a href="#singlselectW" data-toggle="tab">
+					         单选题
+					      </a>
+					   </li>
+					   <li><a href="#mulselectW" data-toggle="tab">简答题</a></li>
+					</ul>
+				</div>
+				<div class="col-xs-4">
+					<div style="float: left;"><h4><span style="font-weight:bold">试卷名称:&nbsp;</span></h4></div>
+					<div style="overflow:auto;float: left;width: 60%;">
+						<input class="form-control" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" id="examTitle" value="" placeholder="请输入试卷名称"></input>
+					</div>
+				</div>
+				<!-- 提交按钮 -->
+				<div class="col-xs-2">
+					<button class="btn btn-info btn-sm" id="addToSubjectStore">新增到题库</button>
+				</div>
+				<div class="col-xs-2">
+					<button class="btn btn-primary btn-sm" id="submitExam">发布试卷</button>
+				</div>
+				
+				<!-- 新增题目模态框 -->
+				<div class="modal fade" id="addSubjectModal" data-backdrop="static"
+					tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button data-dismiss="modal" class="close" type="button">
+									<span aria-hidden="true">×</span><span class="sr-only">Close</span>
+								</button>
+								
+								<!-- 类别导航条 -->
+								<ul id="myAddSubTab" class="nav nav-tabs selectFlag">
+									<li><a href="#addSingleSub" data-toggle="tab"> 单选题 </a></li>
+									<li><a href="#addWriteSub" data-toggle="tab">简答题</a></li>
+								</ul>
+							</div>
+							<div class="modal-body" style="height: 280px;">
+								<!-- 添加题目至题库tabContent -->
+								<div id="myAddSubContent" class="tab-content">
+									<!-- 单选题 -->
+									<div class="tab-pane fade" id="addSingleSub">
+										<!-- 该form表单用于清空和传值 -->
+										<form id="singleForm">
+										<div style="padding-bottom: 1%;clear: both;">
+											<div style="float: left;"><span style="font-weight: bold;">问题:</span></div>
+											<div style="float: left;margin-left: 40%;"><span style="font-weight: bold;">正确答案:</span></div>
+											<div style="float: left;">
+												<label><input type="radio" name="answer" value="A" style="vertical-align:-2px;margin-left: 5px;"/>&nbsp;A</label>
+												<label><input type="radio" name="answer" value="B" style="vertical-align:-2px;margin-left: 5px;"/>&nbsp;B</label>
+												<label><input type="radio" name="answer" value="C" style="vertical-align:-2px;margin-left: 5px;"/>&nbsp;C</label>
+												<label><input type="radio" name="answer" value="D" style="vertical-align:-2px;margin-left: 5px;"/>&nbsp;D</label>
+											</div>
+										</div>
+										
+										<textarea class="form-control" name="singleTitle"></textarea>
+										<div style="clear: both;padding-top: 1%;">
+											<div style="float: left;text-align: center;"><span style="font-weight: bold;font-size: 20px;">A.</span></div>
+											<div style="float: left;width: 80%;margin-left: 2%;"><input class="form-control" name="aOption"/></div>
+										</div>
+										<div style="clear: both;padding-top: 1%;">
+											<div style="float: left;text-align: center;"><span style="font-weight: bold;font-size: 20px;">B.</span></div>
+											<div style="float: left;width: 80%;margin-left: 2%;"><input class="form-control" name="bOption"/></div>
+										</div>
+										<div style="clear: both;padding-top: 1%;">
+											<div style="float: left;text-align: center;"><span style="font-weight: bold;font-size: 20px;">C.</span></div>
+											<div style="float: left;width: 80%;margin-left: 2%;"><input class="form-control" name="cOption"/></div>
+										</div>
+										<div style="clear: both;padding-top: 1%;">
+											<div style="float: left;text-align: center;"><span style="font-weight: bold;font-size: 20px;">D.</span></div>
+											<div style="float: left;width: 80%;margin-left: 2%;"><input class="form-control" name="dOption" /></div>
+										</div>
+										<!-- 清空表单按钮，不显示 -->
+										<input name="res" type="reset" style="display:none;" />
+										</form>
+									</div>
+									<!-- 简答题 -->
+									<div class="tab-pane fade" id="addWriteSub">
+										<form id="writeForm">
+										<h4 class="modal-title">题目内容</h4>
+										<textarea class="form-control" style="margin-top:1%;height:80px;" name="shortTitle"></textarea>
+										<h4 class="modal-title" style="margin-top: 20px;">答案</h4>
+										<textarea class="form-control" style="margin-top:1%;height:80px;" name="shortAnswer"></textarea>
+										<!-- 清空表单按钮，不显示 -->
+										<input name="res" type="reset" style="display:none;" />
+										</form>
+									</div>
+								</div><!-- 添加题目至题库tabContent结束 -->
+
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-primary" type="button" id="addSubjectConfirm">提交</button>
+							</div>
+						</div>
+						<!-- /.modal-content -->
+					</div>
+					<!-- /.modal-dialog -->
+				</div>
+
+			</div>
+			<div id="myTabContent" class="tab-content">
+				<div class="tab-pane fade" id="singlselectW">
+					<!-- 表格部分,出9道题 -->
+					<!-- overflow-y: scroll; -->
+					<div style="height: 320px;overflow-y: auto;">
+						<table class="table table-hover table-condensed" id="mTable" style="width: 100%;table-layout: fixed;">
+							<thead>
+								<tr>
+									<th>题目内容</th>	
+									<th style="text-align: center;">正确答案</th>		
+									<th style="text-align: center;">操作</th>						
+								</tr>
+							</thead>
+							<tbody id="scShow">
+								
+							</tbody>
+						</table>
+					</div>
+					<div style="margin: 0px auto;width: 10%;padding-top: 15px;">
+						<button class="btn btn-primary btn-sm" id="openSingle">新增单选题</button>
+					</div>
+					
+					<!-- 新增单选题模态框 -->
+					<div class="modal fade" id="singleModal" data-backdrop="static"
+						tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button data-dismiss="modal" class="close" type="button">
+										<span aria-hidden="true">×</span><span class="sr-only">Close</span>
+									</button>
+									<h4 class="modal-title">请挑选单选题目</h4>
+								</div>
+								<div class="modal-body" style="overflow-y: auto;max-height: 300px;">
+									<!-- 题目列表,多选 单选题-->
+									<div style="width: 100%;" id="SCContainer">
+										
+									</div>
+					
+								</div>
+								<div class="modal-footer">
+									<button data-dismiss="modal" class="btn btn-default"
+										type="button">关闭</button>
+									<button class="btn btn-primary" type="button" id="addToSingle">提交</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal-dialog -->
+					</div>
+
+				</div><!-- 单选题tab结束 -->
+
+				<div class="tab-pane fade" id="mulselectW">
+					<!-- 表格部分,出3道题 -->
+					<div style="height: 320px;overflow-y: auto;">
+						<table class="table table-hover table-condensed" style="width:100%;;table-layout: fixed;">
+							<thead>
+								<tr>
+									<th>题目内容</th>		
+									<th style="text-align: center;">题目答案</th>	
+									<th style="text-align: center;">操作</th>						
+								</tr>
+							</thead>
+							<tbody id="swShow">
+								
+							</tbody>
+						</table>
+					</div>
+					<div style="margin: 0px auto;width: 10%;padding-top: 15px;">
+						<button class="btn btn-primary btn-sm" id="openWrite">新增简答题</button>
+					</div>
+					<!-- 新增简答题模态框 -->
+					<div class="modal fade" id="writeModal" data-backdrop="static"
+						tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button data-dismiss="modal" class="close" type="button">
+										<span aria-hidden="true">×</span><span class="sr-only">Close</span>
+									</button>
+									<h4 class="modal-title">请挑选简答题目</h4>
+								</div>
+								<div class="modal-body" style="overflow-y: auto;max-height: 300px;">
+									<!-- 题目列表,多选  简答题 -->
+										<!-- 题目列表,多选 单选题-->
+									<div style="width: 100%;" id="WAContainer">
+										
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button data-dismiss="modal" class="btn btn-default"
+										type="button">关闭</button>
+									<button class="btn btn-primary" type="button" id="addToWrite">提交</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal-dialog -->
+					</div>
+
+
+				</div><!-- 简答题tab结束 -->
+			</div><!-- tabContent结束 -->
+		</div><!-- 切换卡container结束 -->
+	</div>
+</body>
+</html>

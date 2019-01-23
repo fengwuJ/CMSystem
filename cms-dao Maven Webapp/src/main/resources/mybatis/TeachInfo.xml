@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.teacher.info.TeacherInfoMapper">
+    
+        <select id="searchTeacherInfo" resultMap="getTeacherInfo">
+            select * from teacher where id = #{tid}
+        </select>  
+
+		<update id="updateTeacherInfo">  
+        	update teacher set phone_number = #{phoneNumber},email = #{email} where id = #{tid} 
+		</update>
+		
+		<update id="updatePassword">  
+        	update teach_user set password = #{newPwd} where id = #{tid} 
+		</update>
+		
+		<resultMap id="getTeacherInfo" type="com.entity.userInfo.TeacherInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		  <result property="email" column="email"/>
+		  <result property="phoneNumber" column="phone_number"/>
+		</resultMap>
+    </mapper>

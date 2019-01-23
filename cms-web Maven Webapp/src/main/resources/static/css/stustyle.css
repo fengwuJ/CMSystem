@@ -1,0 +1,46 @@
+@CHARSET "UTF-8";
+
+/*下方容器*/
+.mcontain{
+	height: 100%;
+	width: 1200px;
+	margin: 0px auto;
+}
+
+/* 右下角div位置和宽高 */
+.mright{
+	height: 100%;
+	float: left;
+	position: relative;
+	border:1px solid #708090;
+}
+
+/* 右下角线 */
+.cmline {
+	height: 1px;
+	width: 900px;
+	border: none;
+	border-top: 5px solid #87CEFA;
+}
+
+/* 右下角标题样式 */
+.cmtitle {
+	font-size: 30px;
+	width: 200px;
+	font-family: 宋体;
+	color: #FFFAFA;
+	background-color: #87CEFA;
+	text-align: center;
+}
+
+a:HOVER{
+	text-decoration:none;
+}
+
+
+
+
+
+
+
+

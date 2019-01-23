@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>批改作业</title>
+<link href="../../css/teachersty.css" th:href="@{/static/css/teachersty.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+<!-- bootstrap-table.min.js -->
+<script src="../../js/bootstrap-table.min.js" th:src="@{/static/js/bootstrap-table.min.js}"></script>
+<!-- 引入中文语言包 -->
+<script src="../../js/bootstrap-table-zh-CN.min.js" th:src="@{/static/js/bootstrap-table-zh-CN.min.js}"></script>
+
+<style type="text/css">
+	li{
+		cursor: pointer;
+		color:  #0066cc;
+	}
+</style>
+
+</head>
+<body>
+	<script type="text/javascript">
+		$(function(){
+			var tid = $("#uid",parent.document).val();
+			var cid = $("#courseid",parent.document).text();
+			var workName;
+			var sid;
+			
+			function getSingleRecord(row){
+				workName = row.title;
+				sid = row.sid;
+				$("#showTable").hide();
+				$("#showSingle").show();
+				$("ol li").removeClass("active");
+				var guidEle = $('<li class="active deleteLi">'+row.sname+'</li>');
+				$(".breadcrumb").append(guidEle);
+				$.ajax({
+					url : "searchWorkContent", // 请求目标
+					type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {
+						tid: $("#uid",parent.document).val(),
+						cid: $("#courseid",parent.document).text(),
+						workName: row.title
+					},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						$("#status").text(row.status);
+						$("#wtitle").text(row.title);
+						$("#wcontent").text(data);
+						if(row.status == "未提交"){
+							$("#downloadFile").prop('disabled',true);
+						}else{
+							$("#downloadFile").prop('disabled',false);
+						}
+					}
+				});
+				
+				$("#downloadFile").click(function(){
+					alert("下载作业将自动完成批改操作");
+					var url = "downloadWork";
+					var form = $("<form></form>").attr("action", url).attr("method", "post").attr('style', 'display:none');
+					form.append($("<input></input>").attr("type", "hidden").attr("name", "tid").attr("value", tid));
+					form.append($("<input></input>").attr("type", "hidden").attr("name", "cid").attr("value", cid));
+					form.append($("<input></input>").attr("type", "hidden").attr("name", "sid").attr("value", sid));
+					form.append($("<input></input>").attr("type", "hidden").attr("name", "workName").attr("value", workName));
+					form.appendTo('body').submit().remove();
+				});
+				
+				$("#preview").click(function(){
+					window.top.open("./PDFJS/web/viewer.html?file="+encodeURIComponent("preview?sid="+sid+"&tid="+tid+"&cid="+cid+"&workName="+workName));
+				});
+				
+				$("#finish").click(function(){
+					$.ajax({
+						url : "finish", // 请求目标
+						type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+						data : {
+							tid: tid,
+							cid: cid,
+							sid: sid,
+							workName: workName,
+						},
+						dataType : 'text',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							alert(data);
+						}
+					});
+				});
+			}
+			
+			function getWorkRecords(){
+				$("#table").bootstrapTable('destroy');
+				$("#table").bootstrapTable({ // 对应table标签的id
+					url : "searchStuWorkRecord", // 获取表格数据的url
+					cache : false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
+					striped : true, //表格显示条纹，默认为false
+					pagination : true, // 在表格底部显示分页组件，默认false
+					pageList : [ 1, 2 ], // 设置页面可以显示的数据条数
+					pageSize : 1, // 页面数据条数
+					pageNumber : 1, // 首页页码
+					sidePagination : 'server', // 设置为服务器端分页
+					queryParams : function(params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+			
+						return {
+							pageSize : params.limit, // 每页要显示的数据条数
+							offset : params.offset, // 每页显示数据的开始行号
+							sort : params.sort, // 要排序的字段
+							sortOrder : params.order, // 排序规则
+							tid: $("#uid",parent.document).val(),
+							cid: $("#courseid",parent.document).text(),
+						}
+					},
+					sortName : 'time', // 要排序的字段
+					sortOrder : 'desc', // 排序规则
+					columns : [
+						{
+							field : 'sid', // 返回json数据中的name
+							title : '学生学号', // 表格表头显示文字
+							align : 'center', // 左右居中
+							valign : 'middle' // 上下居中
+						}, {
+							field : 'sname',
+							title : '学生姓名',
+							align : 'center',
+							valign : 'middle'
+						},{
+							field : 'title',
+							title : '作业标题',
+							align : 'center',
+							valign : 'middle'
+						}, {
+							field : 'time',
+							title : '提交时间',
+							align : 'center',
+							valign : 'middle'
+						}, {
+							title : "操作",
+							align : 'center',
+							valign : 'middle',
+							width : 160, // 定义列的宽度，单位为像素px
+							formatter : function(value, row, index) {
+								return '<a href="javascript:void(0)"  class="msub">查看详情</a>';
+							},
+							events: operateEvents = {"click .msub":function(e,value,row,index){
+					              		getSingleRecord(row);
+					              	}
+					        },     
+						}
+					],
+					onLoadSuccess : function() { //加载成功时执行
+						console.info("加载成功");
+					},
+					onLoadError : function() { //加载失败时执行
+						console.info("加载数据失败");
+					}
+				})
+			}
+		
+			
+			$("#record").on('click',function(){
+				$(this).addClass('active');
+				$(".deleteLi").remove();
+				$("#showSingle").hide();
+				$("#showTable").show();
+				
+			});
+			
+			//初始化表单
+			$("#showSingle").hide();
+			getWorkRecords();
+			
+		});
+	</script>
+	
+	<div class="cmtitle">学生作业记录</div>
+	<div class="cmline"></div>
+	
+	<!-- 面包屑导航条 -->
+	<ol class="breadcrumb" style="margin-bottom: 0px; padding: 1px 15px;">
+		<li id="record" class="active">作业记录</li>
+	</ol>
+
+	<!-- 作业记录 -->
+	<div class="card" style="margin-top: 0px;">
+		<div id="showTable">
+			<table id="table">
+			</table>
+		</div>
+		<div id="showSingle">
+			<div class="panel panel-success" style="width: 50%;margin: 0px auto;margin-top: 5%;">
+			  <div class="panel-heading">作业状态：<span id="status"></span></div>
+			  <div class="panel-body">
+			    <div style="padding-top: 5%;"><span style="font-weight: bold;">作业标题：&nbsp;&nbsp;&nbsp;</span><span id="wtitle"></span></div>
+			    <div style="padding-top: 5%;"><span style="font-weight: bold;">作业内容：&nbsp;&nbsp;&nbsp;</span><p id="wcontent"></p></div>
+			    
+			  </div>
+			  <div class="panel-footer">
+			  	<div style="padding-left:30%; ">
+			  		<button class="btn btn-link" id="preview">预览</button>
+			  		<button class="btn btn-primary" id="downloadFile">下载作业</button>
+			  		<button class="btn btn-link" id="finish">完成批改</button>
+			  	</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

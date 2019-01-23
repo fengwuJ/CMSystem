@@ -1,0 +1,10 @@
+@CHARSET "UTF-8";
+
+.panel-group {
+	max-height: 770px;
+	overflow: auto;
+}
+
+a:HOVER{
+	text-decoration:none;
+}

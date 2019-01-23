@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.mapper.teacher.exam.TeacherExamMapper">
+    
+    	<!-- 检测考试卷子是否已存在 -->
+        <select id="findExamTitleCount" resultType="java.lang.Integer">
+            select count(*) from exam_info where exam_name = #{examTitle}
+        </select>  
+
+		<!-- 检测该单选题是否存在 -->
+		<select id="checkSingleChoiceExsist" resultType="java.lang.Integer">
+			select count(*) from single_choice where title = #{title}
+		</select>
+
+		<!-- 插入单选题到题库 -->
+		<insert id="insertSingleChoiceToStore">
+			insert into single_choice(title,a_option,b_option,c_option,d_option,right_choice) 
+			values(#{title},#{aOption},#{bOption},#{cOption},#{dOption},#{rightChoice})
+		</insert>
+		
+		<!-- 检测该简答题是否存在 -->
+		<select id="checkShortAnswerExsist" resultType="java.lang.Integer">
+			select count(*) from short_answer where title = #{title}
+		</select>
+		
+
+		<!-- 插入简答题到题库 -->
+		<insert id="insertShortAnsweroStore">
+			insert into short_answer(title,answer) 
+			values(#{title},#{answer})
+		</insert>
+		
+		<!-- 插入试卷信息到exam_info -->
+		<insert id="insertExamInfo">
+			insert into exam_info(exam_name,status,time,cid,tid) 
+			values(#{examName},#{status},#{time},#{cid},#{tid})
+		</insert>
+		
+		<!-- 根据title查询单选题 -->
+		<select id="findExamSCByTitle" resultMap="singleChoiceMap">
+			select * from single_choice where title in
+			<foreach collection="scArray" item="title" open="(" close=")" separator=",">
+      			#{title}
+      		</foreach>
+		</select>
+		
+		<!-- 根据title查询简答题 -->
+		<select id="findExamSWByTitle" resultMap="shortAnswerMap">
+			select * from short_answer where title in
+			<foreach collection="swArray" item="title" open="(" close=")" separator=",">
+      			#{title}
+      		</foreach>
+		</select>
+		
+		<!-- 插入试卷单选题 -->
+		<insert id="insertExamSC">
+			insert into exam_single_choice(exam_name,title,a_option,b_option,c_option,d_option,right_choice)
+			values
+			<foreach collection ="escList" item="esc" separator =",">
+         		(#{esc.examName}, #{esc.title}, #{esc.aOption},#{esc.bOption},#{esc.cOption},#{esc.dOption},#{esc.rightChoice})
+    		</foreach >
+		</insert>
+		
+		<!-- 插入试卷简答题 -->
+		<insert id="insertExamSW">
+			insert into exam_short_answer(exam_name,title,answer)
+			values
+			<foreach collection ="esaList" item="esa" separator =",">
+         		(#{esa.examName}, #{esa.title}, #{esa.answer})
+    		</foreach >
+		</insert>
+		
+		<!-- 插入数据到exam_record -->
+		<insert id="insertExamRecord">
+			insert into exam_record(exam_name,sid,cid,cname,tid,tname)
+			values
+			<foreach collection ="list" item="er" separator =",">
+         		(#{er.examName}, #{er.sid}, #{er.cid}, #{er.cname}, #{er.tid}, #{er.tname})
+    		</foreach >
+		</insert>
+		
+		<!-- 获取题库所有单选题 -->
+		<select id="getAllSingles" resultMap="singleChoiceMap">
+			select * from single_choice
+		</select>
+		<resultMap id="singleChoiceMap" type="com.entity.exam.SingleChoice">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="title" column="title"/>
+		  <result property="aOption" column="a_option"/>
+		  <result property="bOption" column="b_option"/>
+		  <result property="cOption" column="c_option"/>
+		  <result property="dOption" column="d_option"/>
+		   <result property="rightChoice" column="right_choice"/>
+		</resultMap>
+		
+		<!-- 获取题库所有简答题 -->
+		<select id="getAllSAnswer" resultMap="shortAnswerMap">
+			select * from short_answer
+		</select>
+		<resultMap id="shortAnswerMap" type="com.entity.exam.ShortAnswer">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="title" column="title"/>
+		  <result property="answer" column="answer"/>
+		</resultMap>
+		
+		<!-- 获取该教师，该课程下的学生ids -->
+		<select id="findSids" resultType="java.lang.String">
+			select sid from tcs_relsp where cid = #{cid} and tid = #{tid}
+		</select>
+		
+		<!-- 批改试卷 -->
+		<!-- 获取学生试卷数量 -->
+		<select id="findStuExamRecordCount" resultType="java.lang.Integer">
+			select count(*) from exam_record where tid = #{tid} and cid = #{cid}
+		</select>
+		
+		<!-- 获取学生的考试信息 -->
+		<select id="findExamRecord" resultMap="examRecordMap">
+			select * from exam_record where cid = #{cid} and tid = #{tid} limit #{offset},#{pageSize}
+		</select>
+		
+		<resultMap id="examRecordMap" type="com.entity.exam.ExamRecord">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="goal" column="goal"/>
+		  <result property="time" column="time"/>
+		  <result property="sid" column="sid"/>
+		  <result property="cid" column="cid"/>
+		  <result property="cname" column="cname"/>
+		  <result property="tid" column="tid"/>
+		  <result property="tname" column="tname"/>
+		</resultMap>
+		
+		<!-- 获取学生试卷单选题得分 -->
+		<select id="findSingleChoiceGoalBy" resultType="java.lang.Integer">
+			select single_choice_goal from stu_exam_single_choice where exam_name = #{examName} and sid = #{sid}
+		</select>
+		
+		<!-- 获取学生试卷简答题信息 -->
+		<select id="findShortAnswer" resultMap="StuExamShortAnswerMap">
+			select * from stu_exam_short_answer where sid = #{sid} and exam_name = #{examName}
+		</select>
+		
+		<resultMap id="StuExamShortAnswerMap" type="com.entity.exam.StuExamShortAnswer">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="sid" column="sid"/>
+		  <result property="a1" column="a1"/>
+		  <result property="a2" column="a2"/>
+		  <result property="a3" column="a3"/>
+		  <result property="shortAnswerGoal" column="short_answer_goal"/>
+		</resultMap>
+		
+		<!-- 查询简答题标准答案 -->
+		<select id="findStandardSA" resultType="java.lang.String">
+			select answer from exam_short_answer where exam_name = #{examName}
+		</select>
+		
+		<!-- 更新学生考试简答题得分 -->
+		<update id="updateSAGoal">
+			update stu_exam_short_answer set short_answer_goal = #{shortGoal} where exam_name = #{examName} and sid = #{sid}
+		</update>
+		
+		<!-- 更新学生考试总分 -->
+		<update id="updateTotalGoal">
+			update exam_record set goal = #{totalGoal}
+			where
+			exam_name = #{examName} and sid = #{sid} and tid = #{tid} and cid = #{cid}
+		</update>
+		
+		<!-- 查询为批改试卷数量 -->
+		<select id="findNotScanCount" resultType="java.lang.Integer">
+			select count(*) from exam_record where exam_name = #{examName} and goal = null
+		</select>
+		
+		<update id="updateExamStatus">
+			update exam_info set status = #{status}
+			where
+			exam_name = #{examName}
+		</update>
+		
+    </mapper>

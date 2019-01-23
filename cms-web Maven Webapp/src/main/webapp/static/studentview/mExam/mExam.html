@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>在线考试</title>
+<link href="../../css/stustyle.css" th:href="@{/static/css/stustyle.css}" rel="stylesheet">
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<!-- 是否有考试，如果没有考试通知，则展示该页面 -->
+	<div style="width: 500px;margin: 0px auto;margin-top: 20%;" id="noExam"><h3>暂未查询到相关考试开放信息</h3></div>
+	<script type="text/javascript">
+		//定时器
+		function clock(){
+			var hour = parseInt($("#hour").text());
+			var min = parseInt($("#min").text());
+			var seconds = parseInt($("#seconds").text());
+			if(hour == 1){
+				$("#hour").text("00");
+				$("#min").text("59");
+				$("#seconds").text("59");
+				return;
+			}
+			if(seconds == 0 && min != 0){
+				$("#min").text(min-1);
+				$("#seconds").text("59");
+				return;
+			}
+			if(seconds == 0 && min == 0){
+				//直接提交答卷
+				var shortAnswerArray = new Array();
+				shortAnswerArray[0] = $("#a1").text();
+				shortAnswerArray[1] = $("#a3").text();
+				shortAnswerArray[2] = $("#a2").text();
+				//提交数据
+				$.ajax({
+					url : "submitAnswer", // 请求目标
+					type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+					data:{sid:sid,examName: examName,singleChoice:answerArray,shortAnswer:shortAnswerArray},
+					dataType:'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					traditional: true,
+					success : function(data) {
+						alert(data);
+						$('#examContent').hide();
+						$('#noExam').show();
+					}
+				});
+			}
+			if(seconds >= 1 && seconds <= 10){
+				var specialSec = "0"+(seconds-1);
+				$("#seconds").text(specialSec);
+			}else{
+				$("#seconds").text(seconds-1);
+			}
+		}
+	
+		//更分页栏样式
+		function checkClick(nowPage,total){
+			if(nowPage == 1){
+				$("#preLi").attr("class","disabled");
+			}else if(nowPage == total){
+				$("#nextLi").attr("class","disabled");
+			}else{
+				$("#preLi").attr("class","able");
+				$("#nextLi").attr("class","able");
+			}
+		}
+		
+		//刷新页面选择题数据
+		function initData(esc){
+			$("#t").text(esc.title);
+			$("#aOption").text(esc.aOption);
+			$("#bOption").text(esc.bOption);
+			$("#cOption").text(esc.cOption);
+			$("#dOption").text(esc.dOption);
+		}
+		
+		//刷新简答题数据
+		function initSAData(saList){
+			var titleIds = ["#t1","#t2","#t3"];
+			var i = 0;
+			for(var sa in saList){
+				$(titleIds[i]).text(saList[sa].title);
+				i = i + 1
+			}
+		}
+		
+		$(function(){
+			var int;
+			var sid = $("#uid",parent.document).val();
+			var currentPage = 1;
+			var examName;
+			var totalPage = 0;
+			var answerArray = ['e','e','e','e','e','e','e','e','e'];
+			
+			
+			
+			//查询是否有考试通知
+			$.ajax({
+				url : "isExam", // 请求目标
+				type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+				data : {
+					sid:sid
+				},
+				dataType : 'text',
+				async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+				cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+				success : function(data) {
+					examName = data;
+					//有考试
+					if(examName != "no"){
+						$('#noExam').hide();
+						$("#examName").val(examName);
+						$('#myModal').modal({show:true});	
+						
+					}else{
+						$('#examContent').hide();
+					}
+				}
+			});
+	
+	
+			//本来需隐藏，如果没有考试通知信息，则显示为展示
+			//$('#noExam').show();
+			//$('#noExam').hide();
+			//$('#myModal').modal({show:true});		//自动弹出模态框
+			//$('#examContent').hide();
+			
+			
+			//开始答题
+			$("#startExam").click(function(){
+				//关闭提示模态框
+				$("#myModal").modal('hide');
+				//默认打开单选题面板
+				$('#myTab a[href="#singlselectW"]').tab('show');
+				
+				//获取单选题总页数
+				$.ajax({
+					url : "getSCTotalPage", // 请求目标
+					type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+					data : {
+						examName : examName
+					},
+					dataType : 'text',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						totalPage = data;
+					}
+				});
+				
+				
+				
+				//初始化请求第一页数据
+				$.ajax({
+						url : "getSingleChoice", // 请求目标
+						type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+						data:{currentPage:currentPage,examName:examName},
+						dataType:'json',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							var esc = data.esc;
+							initData(esc);
+						}
+				});
+				
+				int = window.setInterval("clock()",1000);
+				
+				//初始化简答题数据
+				$.ajax({
+						url : "getShortAnswer", // 请求目标
+						type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+						data:{examName:examName},
+						dataType:'json',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							var saList = data.saList;
+							initSAData(saList);
+						}
+				});
+				
+			});
+			
+			$("#prePage").click(function(){
+				if(currentPage == 1){
+					return false;
+				}
+				$('input:radio[name="answer"]').removeAttr('checked');
+				currentPage = currentPage-1;
+				$("#currentPage").val(currentPage);
+				checkClick(currentPage,totalPage);
+				$.ajax({
+					url : "getSingleChoice", // 请求目标
+					type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+					data:{currentPage:currentPage,examName:examName},
+					dataType:'json',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						var esc = data.esc;
+						initData(esc);
+						if(answerArray[currentPage-1] != 'e'){
+							$('input:radio[name="answer"]').each(function(){
+								if($(this).val() == answerArray[currentPage-1]){
+									$(this).prop("checked",true);
+								}
+							});
+						}
+					}
+				});
+			});
+			$("#nextPage").click(function(){
+				if(currentPage == totalPage){
+					return false;
+				}
+				$('input:radio[name="answer"]').removeAttr('checked');
+				currentPage = currentPage+1;
+				$("#currentPage").val(currentPage);
+				checkClick(currentPage,totalPage);
+				$.ajax({
+					url : "getSingleChoice", // 请求目标
+					type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+					data:{currentPage:currentPage,examName:examName},
+					dataType:'json',
+					async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+					cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+					success : function(data) {
+						var esc = data.esc;
+						initData(esc);
+						if(answerArray[currentPage-1] != 'e'){
+							$('input:radio[name="answer"]').each(function(){
+								if($(this).val() == answerArray[currentPage-1]){
+									$(this).prop("checked",true);
+								}
+							});
+							
+						}
+					}
+				});
+			});
+			
+			//提交试卷信息
+			$("#confirmSubmit").click(function(){
+				var flag = confirm("确认提交吗？只能提交一次哦");
+				if(flag == true){
+					window.clearInterval(int);   
+					var shortAnswerArray = new Array();
+					shortAnswerArray[0] = $("#a1").text();
+					shortAnswerArray[1] = $("#a3").text();
+					shortAnswerArray[2] = $("#a2").text();
+					//提交数据
+					$.ajax({
+						url : "submitAnswer", // 请求目标
+						type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+						data:{sid:sid,examName: examName,singleChoice:answerArray,shortAnswer:shortAnswerArray},
+						dataType:'text',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						traditional: true,
+						success : function(data) {
+							alert(data);
+							$('#examContent').hide();
+							$('#noExam').show();
+						}
+					});
+					
+				}else{
+					return false;
+				}
+				
+			});
+			
+			//radio选中事件
+			$('input:radio[name="answer"]').change(function(){
+				var value = $('input:radio[name="answer"]:checked').val();
+				var index = currentPage - 1;
+				answerArray[index] = value;
+			});
+			
+		});
+	</script>
+	
+	<!-- 有考试通知,展示该div，展示考试须知，确认考生是否开始考试, -->
+	<!-- 模态框（Modal） -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog"  aria-hidden="true" style="background-color: gray;" data-keyboard="false">
+			<div class="modal-dialog" style="margin-top: 10%;" >
+				<div class="modal-content col-center-block">
+					<div class="modal-header">
+						<h3 class="modal-title text-center">
+							在线考试系统
+						</h3>
+					</div>
+					<div class="modal-body">
+						<h4 class="text-center">-----------注意事项----------</h4>
+						<span style="border-left: 3px red solid;padding-left: 5px;color: black;font-size: larger;display: block;">1.考试时间60分钟</span>
+						<span style="border-left: 3px red solid;padding-left: 5px;color: black;font-size: larger;display: block;">2.答题记录自动存档,未提交前可随意更改,一旦提交不可更改</span>
+						<span style="border-left: 3px red solid;padding-left: 5px;color: black;font-size: larger;display: block;">3.起始只会计算客观题分数，待批改完成即可得到最终分数</span>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary center-block beginAns" id="startExam">
+							开始答题
+						</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+	
+	<div class="container" id="examContent">
+		<div class="row">
+			<div class="col-xs-12">
+				<!-- 试卷信息 -->
+				<input id="examName" value="" style="display: none;"/>
+				<!-- 计时器 -->
+				<div style="width: 300px;margin: 0px auto;clear: both;">
+					<div style="float: left;"><h3>剩余时间</h3></div>
+					<div style="float: left;margin-left: 20px;"><h3><span id="hour">01</span>:<span id="min">00</span>:<span id="seconds">00</span></h3></div>
+				</div>
+			</div>
+			<!-- 单选题/简答题导航条 -->
+			<div class="row">
+				<div class="col-xs-10">
+					<ul id="myTab" class="nav nav-tabs">
+					   <li>
+					      <a href="#singlselectW" data-toggle="tab">
+					         单选题
+					      </a>
+					   </li>
+					   <li><a href="#mulselectW" data-toggle="tab">简答题</a></li>
+					</ul>
+				</div>
+				<!-- 提交按钮 -->
+				<div class="col-xs-2">
+					<button class="btn btn-primary btn-sm" id="confirmSubmit">确认提交</button>
+				</div>
+			</div>
+			<div id="myTabContent" class="tab-content">
+				<div class="tab-pane fade" id="singlselectW">
+					<!-- 单选题卡片面板 -->
+					<div class="container" style="margin: 0px auto;">
+						<!-- 第一个面板 -->
+						<div class="row align-items-start panel panel-info">
+							<div class="col panel-heading" style="height: 100px;"><span id="t">题目内容</span></div>
+							<div class="col panel-body">
+							
+								<!-- 记录题目顺序 -->
+								<input id="seqNumber" value="1" style="display: none;"/>
+								
+								<div class="col-xs-12">
+									<label class="radio">
+    									<input type="radio" name="answer"  value="A"><span id="aOption">示例数据</span>
+    								</label>
+							    </div>
+							    <div class="col-xs-12">
+							      	<label class="radio">
+    									<input type="radio" name="answer"  value="B"><span id="bOption">示例数据</span>
+    								</label>
+							    </div>
+							    <div class="col-xs-12">
+									<label class="radio">
+    									<input type="radio" name="answer"  value="C"><span id="cOption">示例数据</span>
+    								</label>
+							    </div>
+							    <div class="col-xs-12">
+							       	<label class="radio">
+    									<input type="radio" name="answer" value="D"><span  id="dOption">示例数据</span>
+    								</label>
+							    </div>
+							</div>
+						</div>
+						
+						<!-- 分页 -->
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- 上下翻页 -->
+								<div style="width: 200px;margin: 0px auto;">
+									<input id="currentPage" value="1" style="display: none;"/>
+									<nav>
+									  <ul class="pager">
+									    <li id="preLi" class="disabled"><a href="javascript:void(0);" id="prePage">上一页</a></li>
+									    <li id="nextLi"><a href="javascript:void(0);" id="nextPage">下一页</a></li>
+									  </ul>
+									</nav>
+								</div>
+							</div>
+						</div>
+					</div>	<!-- container结束 -->
+	   			</div>	<!-- 单选题tab结束 -->
+	   			<div class="tab-pane fade" id="mulselectW">
+	   				<!-- 简答题卡片面板 -->
+	      			<div class="container" style="margin: 0px auto;overflow-y: auto;height: 500px;">
+	      				<div class="row align-items-start panel panel-info">
+	      					<div class="col panel-heading" style="height: 80px;"><p id="t1">细讲解了选择器、边框、背景、文本、颜色、盒模型、伸缩布局盒模型、多列布局、渐变、过渡、动画、媒体、响应Web设计、Web字体等主题下涵盖的所有CSS3新特性</p></div>
+	      					<div class="col panel-body" contenteditable="true" style="height: 100px;overflow:auto; " id="a1"></div>
+	      				</div>
+	      				<div class="row align-items-start panel panel-info">
+	      					<div class="col panel-heading" style="height: 80px;"><p id="t2">细讲解了选择器、边框、背景、文本、颜色、盒模型、伸缩布局盒模型、多列布局、渐变、过渡、动画、媒体、响应Web设计、Web字体等主题下涵盖的所有CSS3新特性</p></div>
+	      					<div class="col panel-body" contenteditable="true" style="height: 100px;overflow:auto;" id="a2"></div>
+	      				</div>
+	      				<div class="row align-items-start panel panel-info">
+	      					<div class="col panel-heading" style="height: 80px;"><p id="t3">细讲解了选择器、边框、背景、文本、颜色、盒模型、伸缩布局盒模型、多列布局、渐变、过渡、动画、媒体、响应Web设计、Web字体等主题下涵盖的所有CSS3新特性</p></div>
+	      					<div class="col panel-body" contenteditable="true" style="height: 100px;overflow:auto; " id="a3"></div>
+	      				</div>
+	      			</div>		<!-- 简答题container -->
+	   			</div>	<!-- 简答题tab结束 -->
+			</div>	<!-- tabContent结束 -->
+		</div>		<!-- row结束 -->
+	</div>		<!-- container结束 -->
+	
+</body>
+</html>

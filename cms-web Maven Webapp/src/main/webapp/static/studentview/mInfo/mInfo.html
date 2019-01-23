@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>我的个人信息</title>
+<link href="../../css/stustyle.css" th:href="@{/static/css/stustyle.css}" rel="stylesheet">
+
+<!-- 引入bootstrap样式 -->
+<link href="../../css/bootstrap.min.css" th:href="@{/static/css/bootstrap.min.css}" rel="stylesheet">
+<!-- jquery -->
+<script src="../../js/jquery.min.js" th:src="@{/static/js/jquery.min.js}"></script>
+<script src="../../js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
+
+<script type="text/javascript">
+	$(function(){
+		//获取学生id
+		var uid = $("#uid",parent.document).val();
+		//获取该学生数据
+		$.ajax({
+			url : "searchStudentInfo", // 请求目标
+			type : "GET", // 请求类型 POST(加密) 或者 GET(默认)
+			data : {
+				sid : uid
+			},
+			dataType : 'json',
+			async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+			cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+			success : function(data) {
+				var studentInfo = data["studentInfo"];
+				$("#studentId").val(studentInfo.id);
+				$("#name").val(studentInfo.name);
+				$("#major").val(studentInfo.major);
+				$("#phoneNum").val(studentInfo.phoneNumber);
+			}
+		});
+		
+	});
+</script>
+
+</head>
+<body>
+	<div style="padding-top: 8px;padding-right: 15px;float: right;">
+		<button class="btn btn-info btn-sm" id="phoneEdit">编辑</button>
+	</div>
+	<div class="cmtitle">个人信息</div>
+	<div class="cmline"></div>
+	
+	<div style="width: 200px;margin: 0px auto;padding-top: 20px;">
+		<div>学号：<input disabled="disabled" class="form-control" id="studentId"/></div><br>
+		<div>姓名：<input disabled="disabled" class="form-control" id="name"/></div><br>
+		<div>专业：<input disabled="disabled" class="form-control" id="major"/></div><br>
+		<div>联系电话：<input disabled="disabled" class="form-control" id="phoneNum"/></div>
+		<div style="width: 80px;margin: 0px auto;margin-top: 30px;"><button class="btn btn-primary" id="saveInfo" disabled="disabled">保存更改</button></div>
+	</div>
+	
+	<script type="text/javascript">
+		$(function(){
+			//是否编辑
+			$("#phoneEdit").click(function(){
+				$('#phoneNum').removeAttr("disabled");
+				$('#saveInfo').removeAttr("disabled");
+			});
+		
+		
+			//是否保存更改
+			$('#saveInfo').click(function(){
+				//验证手机号码是否有效
+				 var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
+				 var phoneNum = $("#phoneNum").val();
+				 if(!myreg.test(phoneNum)){
+				 	alert("您输入的手机号码有误，请重新输入");
+				 	return false;
+				 }
+				var isOK = confirm("确认保存吗？");
+				if(isOK == true){
+					$('#phoneNum').attr("disabled","disabled");
+					$('#saveInfo').attr("disabled","disabled");
+					//ajax
+					$.ajax({
+						url : "updatePhoneNumber", // 请求目标
+						type : "post", // 请求类型 POST(加密) 或者 GET(默认)
+						data : {
+							sid :$("#uid",parent.document).val(),phoneNumber:$("#phoneNum").val()
+						},
+						dataType : 'text',
+						async : true, // true代表异步 是默认的 false代表同步(浏览器一般不支持同步)
+						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
+						success : function(data) {
+							alert(data);
+						}
+					});
+				}else{
+					return false;
+				}
+			});
+		});
+	</script>
+</body>
+</html>

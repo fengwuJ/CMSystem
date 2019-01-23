@@ -1,0 +1,30 @@
+@CHARSET "UTF-8";
+
+/* 右下角线 */
+.cmline {
+	height: 1px;
+	width: 100%;
+	border: none;
+	border-top: 5px solid #87CEFA;
+}
+
+/* 右下角标题样式 */
+.cmtitle {
+	font-size: 30px;
+	width: 230px;
+	font-family: 宋体;
+	color: #FFFAFA;
+	background-color: #87CEFA;
+	text-align: center;
+}
+
+a:hover{
+	text-decoration:none;
+}
+
+
+
+
+
+
+
