@@ -1,6 +1,8 @@
 package com.entity.exam;
 
-public class SingleChoice {
+import java.io.Serializable;
+
+public class SingleChoice implements Serializable{
 	private int seqNumber;
 	private String title;
 	private String aOption;

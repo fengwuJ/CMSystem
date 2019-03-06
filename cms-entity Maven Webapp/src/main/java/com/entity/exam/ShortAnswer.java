@@ -1,6 +1,8 @@
 package com.entity.exam;
 
-public class ShortAnswer {
+import java.io.Serializable;
+
+public class ShortAnswer implements Serializable{
 	private int seqNumber;
 	private String title;
 	private String answer;

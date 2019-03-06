@@ -1,6 +1,8 @@
 package com.entity.course;
 
-public class CourseInfo {
+import java.io.Serializable;
+
+public class CourseInfo implements Serializable{
 	private int seqNumber;
 	private String id;
 	private String name;

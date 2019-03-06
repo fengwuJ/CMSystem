@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,6 +24,7 @@ public class TeachInfoController {
 
 	@RequestMapping("/searchMyInfo")
 	@ResponseBody
+	@Cacheable(value="userInfo", key="'teacher_'+#id")
 	public Map<String, Object> searchMyInfo(String tid){
 		TeacherInfo teacherInfo = stiInf.searchTeacherInfoById(tid);
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -31,6 +34,7 @@ public class TeachInfoController {
 	
 	@RequestMapping("/updateInfo")
 	@ResponseBody
+	@CacheEvict(value="userInfo", key="'teacher_'+#id")
 	public String updateInfo(String tid,String email,String phoneNumber){
 		String result = stiInf.updateTeacherInfo(tid,email,phoneNumber);
 		return result;

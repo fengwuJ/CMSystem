@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +33,7 @@ public class TeachExamController {
 	//检查试卷是否重名
 	@RequestMapping("/checkExamTitleExist")
 	@ResponseBody
+	
 	public boolean checkExamTitleExist(String examTitle) {
 		boolean flag = tesInf.isExamTitleExist(examTitle);
 		return flag;
@@ -39,6 +42,7 @@ public class TeachExamController {
 	//新增题库单选题
 	@RequestMapping("/insertSingleChoice")
 	@ResponseBody
+	@CacheEvict(value="allSingles", key="'allSingles'")
 	public String insertSingleChoice(String singleTitle,String aOption,String bOption,String cOption,String dOption,char rightChoice) {
 		String result = tesInf.insertSingleChoiceToStore(singleTitle,aOption,bOption,cOption,dOption,rightChoice);
 		return result;
@@ -47,6 +51,7 @@ public class TeachExamController {
 	//新增题库简答题
 	@RequestMapping("/insertShortAnswer")
 	@ResponseBody
+	@CacheEvict(value="allWrites", key="'allWrites'")
 	public String insertShortAnswer(String shortTitle,String shortAnswer) {
 		String result = tesInf.insertShortAnswer(shortTitle,shortAnswer);
 		return result;
@@ -54,6 +59,7 @@ public class TeachExamController {
 	
 	@RequestMapping("/getSingles")
 	@ResponseBody
+	@Cacheable(value="allSingles", key="'allSingles'")
 	public Map<String, Object> getSingles() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<SingleChoice> list = tesInf.getAllSingles();
@@ -63,6 +69,7 @@ public class TeachExamController {
 	
 	@RequestMapping("/getWrites")
 	@ResponseBody
+	@Cacheable(value="allWrites", key="'allWrites'")
 	public Map<String, Object> getWrites(){
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<ShortAnswer> list = tesInf.getAllSAnswer();
