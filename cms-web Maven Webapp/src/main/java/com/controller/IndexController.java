@@ -27,10 +27,6 @@ public class IndexController {
 		return "index";
 	}
 	
-	@RequestMapping("/login")
-	public String toLogin() {
-		return "login";
-	}
 	
 	@RequestMapping("/register")
 	public String toRegister() {
@@ -40,7 +36,7 @@ public class IndexController {
 	
 	@RequestMapping("/main")
 	public String toMain(String userId,String password,Integer identify,HttpServletRequest request,Model model) {
-		String nextUrl = "login";
+		String nextUrl = "myRedirect";
 		String username = null;
 		HttpSession session = null;
 		

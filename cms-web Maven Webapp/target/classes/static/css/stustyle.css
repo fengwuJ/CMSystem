@@ -1,5 +1,6 @@
 @CHARSET "UTF-8";
 
+
 /*下方容器*/
 .mcontain{
 	height: 100%;
@@ -8,13 +9,36 @@
 }
 
 /* 右下角div位置和宽高 */
-.mright{
-	height: 100%;
-	float: left;
-	position: relative;
-	border:1px solid #708090;
+.tableA
+{
+    display: table;
+    width: 100%;
 }
 
+.row
+{
+    display: table-row;
+}
+#mLeft
+{
+    width: 200px;
+}
+#mRight,#mLeft
+{
+    display: table-cell;
+    vertical-align: top;
+}
+#mRight{
+	height: 100%;
+
+}
+
+#myReplace
+{
+   width:100%;
+    margin-left: 20px;
+
+}
 /* 右下角线 */
 .cmline {
 	height: 1px;
