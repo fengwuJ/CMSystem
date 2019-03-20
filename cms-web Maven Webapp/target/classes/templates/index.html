@@ -15,61 +15,165 @@
 <script src="../static/js/bootstrap.min.js" th:src="@{/static/js/bootstrap.min.js}"></script>
 <script>
 $(function(){
+	loginSpot=document.getElementById("loginSpot");
 	var identify = 0;
 	$("#loginbtn").click(function(){
-        var loginCircle=document.getElementById("loginSpot");
-        loginCircle.style.width="450px";
-        loginCircle.style.top="200px";
-        loginCircle.style.right="50px";
-        loginCircle.style.height="350px";
-        loginCircle.style.backgroundColor="rgba(35,35,35,0.9)";
+        loginSpot.style.width="450px";
+        loginSpot.style.top="200px";
+        loginSpot.style.right="50px";
+        loginSpot.style.height="350px";
+        loginSpot.style.backgroundColor="rgba(35,35,35,0.9)";
+        loginON=true;
 	});
-	
-	$("#registbtn").click(function(){
-		alert("本系统与高校学生信息对接，不提供个人注册");
-	});
-	
+    naviON=false;
+    loginON=false;
+    userCheck=false;
+    passCheck=false;
+    $("#registbtn").click(function(){
+        if(naviON)
+            registerBlock();
+        else
+            registerOpen();
+    });
+
 	$("#loginBtnStu").click(function(){
-		identify = 0;
-		$("#identify").val(identify);
+		$("#userId").blur();
+		$("#password").blur();
+		if(passCheck == true && userCheck == true){
+			identify = 0;
+			$("#identify").val(identify);
+			$("#mForm").submit();
+		}else{
+			return false;
+		}
+		
+		
 	});
 	
 	$("#loginBtnTea").click(function(){
-		identify = 1;
-		$("#identify").val(identify);
+		 $("#userId").blur();
+		 $("#password").blur();
+		if(passCheck == true && userCheck == true){
+			identify = 1;
+			$("#identify").val(identify);
+			$("#mForm").submit();
+		}else{
+			return false;
+		}
+		
 	});
+
+    $("#userId").blur(
+        function () {
+            var  str=/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/im;
+            var userId=document.getElementById('userId').value;
+            var alertMsg=document.getElementById('alertMsg');
+            if(userId==="") {
+                alertMsg.innerHTML = "账号不能为空";
+                userCheck=false;
+            }
+            else if(str.test(userId))
+			{
+			    alertMsg.innerHTML="不能输入非法符号";
+                userCheck=false;
+			}
+            else
+			{
+			    alertMsg.innerHTML="&nbsp;";
+			    userCheck=true;
+			}
+        }
+    );
+    $("#password").blur(
+        function () {
+            var password=document.getElementById('password').value;
+            var alertMsg=document.getElementById('alertMsg1');
+            if(password==="")
+			{
+			    alertMsg.innerHTML="密码不能为空";
+                passCheck=false;
+			}
+            else
+            {
+                alertMsg.innerHTML="&nbsp;";
+                passCheck=true;
+            }
+        }
+	);
 });
+
 
 
 function disappear()
 {
-    var loginCircle=document.getElementById("loginSpot");
-	loginCircle.style.width=0;
-	loginCircle.style.top=0;
-	loginCircle.style.height=0;
-    loginCircle.style.right=0;
-	loginCircle.style.backgroundColor="rgba(35,35,35,0)";
+    loginSpot.style.width=0;
+    loginSpot.style.top=0;
+    loginSpot.style.height=0;
+    loginSpot.style.right=0;
+    loginSpot.style.backgroundColor="rgba(35,35,35,0)";
+    loginON=false;
+    userCheck = false;
+    passCheck = false;
+    document.getElementById('alertMsg').innerHTML="&nbsp;";
+    document.getElementById('alertMsg1').innerHTML="&nbsp;";
+}
+
+function registerOpen() {
+    var naviBar=document.getElementById('naviBar');
+    var registerInfor=document.getElementById('registerInfor');
+    naviBar.style.height="140px";
+    registerInfor.style.display='block';
+    naviON=true;
+
+   setTimeout(registerBlock,3000);
+}
+function registerBlock() {
+    var naviBar=document.getElementById('naviBar');
+    var registerInfor=document.getElementById('registerInfor');
+    naviBar.style.height="100px";
+    registerInfor.style.display='none';
+    naviON=false;
 }
 
 $(function(){
     $(window).keydown(function (event) {
         if (event.keyCode == 27) {
-            var loginCircle=document.getElementById("loginSpot");
-            var logCiStatus=loginCircle.style.width;
-            if(logCiStatus!="0")
-			{
-			    disappear();
-			}
+            if(loginON)
+            {
+                disappear();
+            }
+            else if (naviON)
+                registerBlock();
 
         }
     });
 });
+
+//function checkNull() {
+//
+//    var userId=document.getElementById('userId');
+//    var password=document.getElementById('password');
+//    var loginCircle=document.getElementById('loginCircle');
+//
+//	if(userId.value==""||password.value=="")
+//	{
+//		loginCircle.display='none';
+//		return false;
+//	}
+//	else if(!userId.value.test(str))
+//	{
+//	    return true;
+//	}
+//
+//
+//}
+
 </script>
 </head>
 <body>
 
 <!--this is navigation part-->
-<nav class="navBar " >
+<nav class="navBar " id="naviBar">
 	<div class="containerFluid" >
 		<div class="naviBrand">
 			<h2 style="color: #7EC0EE;">fengwuJ</h2>
@@ -86,19 +190,21 @@ $(function(){
 			<span style="color: white;">登录</span>
 		</button>
 			<div class="col-lg-4 col-center-block panel panel-default col-sm-4" id="loginSpot">
+				<div id="loginCircle">
 				<div class="bs-example bs-example-form" role="form">
 					<div class="cha" onclick="disappear();"></div>
 					<h1 class="title" style="color: white;">课程管理系统</h1>
 					<form action="main" method="post" id="mForm">
 						<div class="input-group">
 							<span class="input-group-addon">账号</span>
-							<input type="text" class="form-control" name="userId" placeholder="请使用学号或教师编号登录">
+							<input type="text" class="form-control" name="userId" id="userId" placeholder="请使用学号或教师编号登录" >
 						</div>
-						<br />
+						<p id="alertMsg">&nbsp;</p>
 						<div class="input-group">
 							<span class="input-group-addon">密码</span>
-							<input type="password" class="form-control passwd" placeholder="您的初始密码为编号后六位" name="password">
+							<input type="password" class="form-control passwd" id="password" placeholder="您的初始密码为编号后六位" name="password">
 						</div>
+						<p id="alertMsg1">&nbsp;</p>
 						<div style="display: none;">
 							<input name="identify" id="identify"/>
 						</div>
@@ -110,7 +216,6 @@ $(function(){
 						<!--<input name="identify" type="radio" value="1" />教师-->
 						<!--</label>-->
 						<!--</div>-->
-						<h3 class="pswdAtten"></h3>
 						<div class="button0 input-group">
 							<!--input-group submit col-lg-12 col-sm-12 col-xs-12-->
 							<button class="btn-success btn-lg" id="loginBtnStu" >学生登录</button>
@@ -119,11 +224,14 @@ $(function(){
 					</form>
 				</div>
 			</div>
+			</div>
 		</div>
 		<div style="float:left;margin-left: 10px;">
 		<button class="btn btn-primary" style="width:60px; border-radius: 25px;" id="registbtn">注册</button>
 		</div>
 		</div>
+		<div id="registerInfor""><span>本系统与高校学生信息对接，不提供个人注册</span> </div>
+
 	</div>
 
 
@@ -153,5 +261,9 @@ $(function(){
 </div>
 
 <!--this is the end of footer area-->
+
+<script>
+
+</script>
 </body>
 </html>
