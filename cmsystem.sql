@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-03-06 16:11:06
+Date: 2019-03-27 20:45:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -109,7 +109,7 @@ CREATE TABLE `exam_info` (
   `tid` varchar(100) NOT NULL COMMENT '教师编号外键',
   PRIMARY KEY (`seq_number`),
   UNIQUE KEY `exam_info_UN` (`exam_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='考试卷子信息，由单选题和简答题组成';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='考试卷子信息，由单选题和简答题组成';
 
 -- ----------------------------
 -- Records of exam_info
@@ -117,7 +117,7 @@ CREATE TABLE `exam_info` (
 INSERT INTO `exam_info` VALUES ('1', '第一次考试', '已批改', '2018-12-13', '040401', 't131000');
 INSERT INTO `exam_info` VALUES ('2', '第二次考试', '已批改', '2018-12-13', '040404', 't131006');
 INSERT INTO `exam_info` VALUES ('10', '第三次考试', '已批改', '2019-01-06', '040402', 't131000');
-INSERT INTO `exam_info` VALUES ('11', '第四次', '未批改', '2019-01-09', '040402', 't131000');
+INSERT INTO `exam_info` VALUES ('13', '第四次', '未批改', '2019-03-14', '040402', 't131000');
 
 -- ----------------------------
 -- Table structure for exam_record
@@ -138,7 +138,7 @@ CREATE TABLE `exam_record` (
   KEY `exam_record_teacher_FK` (`tid`),
   CONSTRAINT `exam_record_stu_course_relsp_FK` FOREIGN KEY (`sid`, `cid`) REFERENCES `stu_course_relsp` (`sid`, `cid`),
   CONSTRAINT `exam_record_teacher_FK` FOREIGN KEY (`tid`) REFERENCES `teacher` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='用于记录学生考试记录及成绩的表单';
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='用于记录学生考试记录及成绩的表单';
 
 -- ----------------------------
 -- Records of exam_record
@@ -146,9 +146,8 @@ CREATE TABLE `exam_record` (
 INSERT INTO `exam_record` VALUES ('1', '第一次考试', '70', '2018-12-13', '2015214000', '040401', '高等数学', 't131000', '张三');
 INSERT INTO `exam_record` VALUES ('2', '第二次考试', '70', '2018-12-13', '2015214000', '040404', '计算机科学导论', 't131006', '谢鹰');
 INSERT INTO `exam_record` VALUES ('9', '第三次考试', '103', '2019-01-06', '2015214000', '040402', '大学英语', 't131000', '张三');
-INSERT INTO `exam_record` VALUES ('10', '第三次考试', '130', '2019-01-09', '2015214003', '040402', '大学英语', 't131000', '张三');
-INSERT INTO `exam_record` VALUES ('11', '第四次', null, '2019-01-09', '2015214000', '040402', '大学英语', 't131000', '张三');
-INSERT INTO `exam_record` VALUES ('12', '第四次', null, null, '2015214003', '040402', '大学英语', 't131000', '张三');
+INSERT INTO `exam_record` VALUES ('15', '第四次', null, '2019-03-14', '2015214000', '040402', '大学英语', 't131000', '张三');
+INSERT INTO `exam_record` VALUES ('16', '第四次', null, null, '2015214003', '040402', '大学英语', 't131000', '张三');
 
 -- ----------------------------
 -- Table structure for exam_short_answer
@@ -164,7 +163,7 @@ CREATE TABLE `exam_short_answer` (
   KEY `exam_short_answer_short_answer_FK` (`title`),
   CONSTRAINT `exam_short_answer_exam_info_FK` FOREIGN KEY (`exam_name`) REFERENCES `exam_info` (`exam_name`),
   CONSTRAINT `exam_short_answer_short_answer_FK` FOREIGN KEY (`title`) REFERENCES `short_answer` (`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='考试卷子简答题';
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='考试卷子简答题';
 
 -- ----------------------------
 -- Records of exam_short_answer
@@ -178,9 +177,9 @@ INSERT INTO `exam_short_answer` VALUES ('14', '第二次考试', '什么是方�
 INSERT INTO `exam_short_answer` VALUES ('15', '第三次考试', '构造方法和普通的成员方法有什么区别？', '构造方法是类的一个特殊成员，它会在类实例化对象时被自动调用。而普通方法只有在使用的时候才会被调用。在定义构造方法时要求方法名与类名相同、在方法名的前面没有返回值类型的声明、在方法中不能使用return语句返回一个值\n\n');
 INSERT INTO `exam_short_answer` VALUES ('16', '第三次考试', '单例设计模式具备哪些特点？', '单例模式可以保证在整个程序运行期间针对该类只存在一个实例对象。');
 INSERT INTO `exam_short_answer` VALUES ('17', '第三次考试', '简述Java的特点。', '面向对象、跨平台性、健壮性、安全性、可移植性、多线程性、动态性等。');
-INSERT INTO `exam_short_answer` VALUES ('18', '第四次', '构造方法和普通的成员方法有什么区别？', '构造方法是类的一个特殊成员，它会在类实例化对象时被自动调用。而普通方法只有在使用的时候才会被调用。在定义构造方法时要求方法名与类名相同、在方法名的前面没有返回值类型的声明、在方法中不能使用return语句返回一个值\n\n');
-INSERT INTO `exam_short_answer` VALUES ('19', '第四次', '单例设计模式具备哪些特点？', '单例模式可以保证在整个程序运行期间针对该类只存在一个实例对象。');
-INSERT INTO `exam_short_answer` VALUES ('20', '第四次', '简述Java的特点。', '面向对象、跨平台性、健壮性、安全性、可移植性、多线程性、动态性等。');
+INSERT INTO `exam_short_answer` VALUES ('24', '第四次', '简述Java的特点。', '面向对象、跨平台性、健壮性、安全性、可移植性、多线程性、动态性等。');
+INSERT INTO `exam_short_answer` VALUES ('25', '第四次', '什么是多态？', '多态意味着一个对象有着多种形态，可以在特定的情况下，表现不同的状态，从而对应着不同的属性和方法。简单的说，多态就是使用父类类型的变量引用子类对象，根据被引用子类对象的特性，程序会得到不同的运行效果。');
+INSERT INTO `exam_short_answer` VALUES ('26', '第四次', 'String和StringBuffer有什么区别？', 'String类是不可变类，即字符串值一旦初始化后就不可能改变。StringBuffer是可变字符串类，类似String的缓冲区，可以修改字符串的值。\n\n');
 
 -- ----------------------------
 -- Table structure for exam_single_choice
@@ -200,7 +199,7 @@ CREATE TABLE `exam_single_choice` (
   KEY `exam_single_choice_single_choice_FK` (`title`),
   CONSTRAINT `exam_single_choice_exam_info_FK` FOREIGN KEY (`exam_name`) REFERENCES `exam_info` (`exam_name`),
   CONSTRAINT `exam_single_choice_single_choice_FK` FOREIGN KEY (`title`) REFERENCES `single_choice` (`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COMMENT='用于存储挑选出来进行考试的单选题';
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8 COMMENT='用于存储挑选出来进行考试的单选题';
 
 -- ----------------------------
 -- Records of exam_single_choice
@@ -232,15 +231,15 @@ INSERT INTO `exam_single_choice` VALUES ('51', '第三次考试', 'Which method 
 INSERT INTO `exam_single_choice` VALUES ('52', '第三次考试', '在JavaScript中如何验证一个数据是否是数字？', '如果用Integer.parseInt(value)有误就不是数字', ' int I = value 若报错就不是数字', '没有方法验证', '利用isNaN(value) 返回的boolean进行判断', 'D');
 INSERT INTO `exam_single_choice` VALUES ('53', '第三次考试', 'JavaScript中判断服务器已经响应的标志是？', 'xmlHttp.readyState = =4', 'xmlHttp.readyState = =3', 'xmlHttp.readyState = =2', 'xmlHttp.readyState = =1', 'A');
 INSERT INTO `exam_single_choice` VALUES ('54', '第三次考试', '下面哪项不属于SQL语句的子类', '数据定义语言(DDL)', '数据查询语言(DQL)', '事务控制语言(TCL)', ' 数据插入语言 (DIL)', 'D');
-INSERT INTO `exam_single_choice` VALUES ('55', '第四次', '下列哪种说法是正确的', '实例方法可直接调用超类的实例方法', '实例方法可直接调用超类的类方法', ' 实例方法可直接调用其他类的实例方法', '实例方法可直接调用本类的类方法', 'D');
-INSERT INTO `exam_single_choice` VALUES ('56', '第四次', '用于调用存储过程的对象是？', 'ResultSet', ' DriverManager', ' CallableStatemet', ' PreparedStatement', 'C');
-INSERT INTO `exam_single_choice` VALUES ('57', '第四次', ' 在Servlet处理请求的方式为？', '以进程的方式', '以程序的方式', '以线程的方式', '以响应的方式', 'C');
-INSERT INTO `exam_single_choice` VALUES ('58', '第四次', '在Servlet的生命周期中，容器只调用一次的方法是?', 'service', ' getServletConfig', 'init', 'destroy', 'C');
-INSERT INTO `exam_single_choice` VALUES ('59', '第四次', ' 下面关于垃圾收集的说法正确的是？', '一旦一个对象成为垃圾，就立刻被收集掉', ' 对象空间被收集掉之后，会执行该对象的finalize方法', 'finalize方法和C++的析构函数是完全一回事情', '一个对象成为垃圾是因为不再有引用指着它，但是线程并非如此', 'D');
-INSERT INTO `exam_single_choice` VALUES ('60', '第四次', 'Which method is used by a Servlet to place its session ID in a URL that is written to the servlet’s response output stream?', 'The encodeURL method of the HttpServletRequest interface', 'The encodeURL method of the HttpServletResponse interface.', 'The rewriteURL method of the HttpServletRequest interface', 'The rewriteURL method of the HttpServletResponse interface', 'B');
-INSERT INTO `exam_single_choice` VALUES ('61', '第四次', '在JavaScript中如何验证一个数据是否是数字？', '如果用Integer.parseInt(value)有误就不是数字', ' int I = value 若报错就不是数字', '没有方法验证', '利用isNaN(value) 返回的boolean进行判断', 'D');
-INSERT INTO `exam_single_choice` VALUES ('62', '第四次', 'JavaScript中判断服务器已经响应的标志是？', 'xmlHttp.readyState = =4', 'xmlHttp.readyState = =3', 'xmlHttp.readyState = =2', 'xmlHttp.readyState = =1', 'A');
-INSERT INTO `exam_single_choice` VALUES ('63', '第四次', '关于正则表达式声明6位数字的邮编，以下代码正确的是？', ' var  reg = /\\d6/', ' var  reg = \\d{6}\\', ' var  reg = /\\d{6}/', ' var  reg = new RegExp(\"\\d{6}\")', 'C');
+INSERT INTO `exam_single_choice` VALUES ('73', '第四次', '下列哪种说法是正确的', '实例方法可直接调用超类的实例方法', '实例方法可直接调用超类的类方法', ' 实例方法可直接调用其他类的实例方法', '实例方法可直接调用本类的类方法', 'D');
+INSERT INTO `exam_single_choice` VALUES ('74', '第四次', '用于调用存储过程的对象是？', 'ResultSet', ' DriverManager', ' CallableStatemet', ' PreparedStatement', 'C');
+INSERT INTO `exam_single_choice` VALUES ('75', '第四次', '在数据库系统中，提供数据与应用程序间物理独立性的是？', '外模式/模式映像', '模式/内模式映像', '外模式/内模式映像', '子模式/模式映像', 'B');
+INSERT INTO `exam_single_choice` VALUES ('76', '第四次', '下列关于视图的说法中错误的是', '视图是从一个或多个基本表导出的表，它是虚表', '视图可以被用来对无权用户屏蔽数据', '视图一经定义就可以和基本表一样被查询和更新', '视图可以用来定义新的视图', 'C');
+INSERT INTO `exam_single_choice` VALUES ('77', '第四次', ' 如果一个事务在故障发生之前完成，但是它并没有到达检查点，则系统恢复时应对该事务执行', 'REDO操作', ' UNDO操作', ' RESTART操作', 'NULL操作', 'A');
+INSERT INTO `exam_single_choice` VALUES ('78', '第四次', '下列关于栈的叙述正确的是？', '栈是非线性结构', ' 栈是一种树状结构', '栈具有先进先出的特征', '栈具有后进先出的特征', 'D');
+INSERT INTO `exam_single_choice` VALUES ('79', '第四次', '下面数据结构中，属于非线性的是？', '线性表', '树', '队列', '堆栈', 'B');
+INSERT INTO `exam_single_choice` VALUES ('80', '第四次', '软件设计中划分模块的一个准则是', '低内聚低耦合', '低内聚高耦合', '高内聚低耦合', '高内聚高耦合', 'C');
+INSERT INTO `exam_single_choice` VALUES ('81', '第四次', '()设备既是输入设备又是输出设备？', '键盘', '打印机', '硬盘', '显示器', 'C');
 
 -- ----------------------------
 -- Table structure for short_answer
@@ -415,14 +414,14 @@ CREATE TABLE `stu_exam_short_answer` (
   KEY `stu_exam_short_answer_student_FK` (`sid`),
   CONSTRAINT `stu_exam_short_answer_exam_info_FK` FOREIGN KEY (`exam_name`) REFERENCES `exam_info` (`exam_name`),
   CONSTRAINT `stu_exam_short_answer_student_FK` FOREIGN KEY (`sid`) REFERENCES `student` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='学生考试简答题答案表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='学生考试简答题答案表';
 
 -- ----------------------------
 -- Records of stu_exam_short_answer
 -- ----------------------------
 INSERT INTO `stu_exam_short_answer` VALUES ('5', '第三次考试', '2015214000', '单利', 'java', '构造', '23');
 INSERT INTO `stu_exam_short_answer` VALUES ('6', '第三次考试', '2015214003', 'dl', 'jsjava', 'gz', '40');
-INSERT INTO `stu_exam_short_answer` VALUES ('7', '第四次', '2015214000', 'hhh', 'jjjj', 'ffff', null);
+INSERT INTO `stu_exam_short_answer` VALUES ('8', '第四次', '2015214000', '测试数据', '测试数据', '测试数据', null);
 
 -- ----------------------------
 -- Table structure for stu_exam_single_choice
@@ -438,14 +437,14 @@ CREATE TABLE `stu_exam_single_choice` (
   KEY `stu_exam_single_choice_student_FK` (`sid`),
   CONSTRAINT `stu_exam_single_choice_exam_info_FK` FOREIGN KEY (`exam_name`) REFERENCES `exam_info` (`exam_name`),
   CONSTRAINT `stu_exam_single_choice_student_FK` FOREIGN KEY (`sid`) REFERENCES `student` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='学生单选题得分';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='学生单选题得分';
 
 -- ----------------------------
 -- Records of stu_exam_single_choice
 -- ----------------------------
 INSERT INTO `stu_exam_single_choice` VALUES ('5', '第三次考试', '2015214000', '80');
 INSERT INTO `stu_exam_single_choice` VALUES ('6', '第三次考试', '2015214003', '90');
-INSERT INTO `stu_exam_single_choice` VALUES ('7', '第四次', '2015214000', '20');
+INSERT INTO `stu_exam_single_choice` VALUES ('8', '第四次', '2015214000', '50');
 
 -- ----------------------------
 -- Table structure for stu_user
@@ -636,8 +635,8 @@ CREATE TABLE `work_file` (
 -- ----------------------------
 INSERT INTO `work_file` VALUES ('1', null, null, null, '2015214000', '040401', 't131000', '未提交', '二维数组中的查找');
 INSERT INTO `work_file` VALUES ('3', null, null, null, '2015214000', '040404', 't131006', '未提交', '替换空格');
-INSERT INTO `work_file` VALUES ('5', 'E:\\workspace\\Course%20Manage%20System\\cms-web%20Maven%20Webapp\\target\\classes\\static\\wfile\\040402\\2015214000\\时长.pdf', '2019-01-23', '2019-01-24', '2015214000', '040402', 't131000', '已提交', '替换空格');
-INSERT INTO `work_file` VALUES ('6', null, null, null, '2015214000', '040402', 't131000', '未提交', '斐波那契数列');
+INSERT INTO `work_file` VALUES ('5', 'E:\\workspace\\Course%20Manage%20System\\cms-web%20Maven%20Webapp\\target\\classes\\static\\wfile\\040402\\2015214000\\时长.pdf', '2019-01-23', '2019-03-14', '2015214000', '040402', 't131000', '已提交', '替换空格');
+INSERT INTO `work_file` VALUES ('6', null, null, '2019-03-14', '2015214000', '040402', 't131000', '未提交', '斐波那契数列');
 INSERT INTO `work_file` VALUES ('7', null, null, null, '2015214000', '040402', 't131000', '未提交', '作业标题');
 INSERT INTO `work_file` VALUES ('8', null, null, null, '2015214003', '040402', 't131000', '未提交', '作业标题');
 
