@@ -1,35 +1,161 @@
 @CHARSET "UTF-8";
+
+.navBar
+{
+    border-radius:0 ;
+    margin: 0;
+    background-color:rgb(34,34,34);
+}
+.containerFluid
+{
+    width: 80%;
+    margin: 0 auto;
+    height: 100px;
+}
+
+.naviBrand
+{
+    /*margin-left: 80px;*/
+    display: inline-block;
+}
+.naviBrand h2
+{
+    display: inline-block;
+    line-height: 100px;
+    margin: 0;
+}
+
+#myNavibar
+{
+    margin-left: 50px;
+    display: inline-block;
+}
+#myNavibar>li
+{
+    list-style: none;
+    margin-right: 70px;
+    display: inline-block;
+}
+#myNavibar>li>a
+{
+    color: white;
+    text-decoration: none;
+    line-height:100px;
+
+}
+
+
+#banner
+{
+    background-image: url(../image/bkPic.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat:no-repeat;
+    height: 800px;
+    padding-top: 100px;
+    margin-top: 0;
+}
 .col-center-block {
-	float: none;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 5%;
-	background-color: rgba(0, 128, 220, 0.2);
+    float: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    background-color: rgba(35, 35, 35,0.9);
+    border-radius:2% 2%;
 }
 
 .title {
-	padding: 4% 0 4% 0;
-	text-align: center;
-	border-bottom: 2px dotted black;
-	margin-bottom: 5%;
+    padding: 4% 0 4% 0;
+    text-align: center;
+    margin-bottom: 5%;
 }
 
 .submit {
-	border-top: 2px dotted black;
-	padding: 4% 0 4% 0;
-	margin-top: 5%;
+    padding: 4% 0 4% 0;
+    margin-top: 5%;
 }
 
 .submit button {
-	width: 30%;
-	margin-left: 15%;
+    width: 30%;
+    margin-left: 15%;
 }
 
 .pswdAtten {
-	text-align: center;
+    text-align: center;
 }
 
-body {
-	background-image: url(../image/bkPic.jpg);
+#loginSpot
+{
+    width: 50%;
+    margin-bottom: 500px;
+}
+
+.input-group
+{
+    width: 70%;
+    margin: 0 auto;
+}
+
+.button0
+{
+    padding:20px 0 50px 0;
+}
+
+
+#loginBtnTea
+{
+    float:right;
+    background-color:#fc8318;
+}
+#loginBtnTea:hover
+{
+    background-color:#cf6c14;
+}
+#loginBtnStu,#loginBtnTea
+{
+    width: 40%;
+    border: none;
+}
+
+
+
+@media (min-width: 1080px)
+{
+    #loginSpot
+    {
+        width: 40%;
+    }
+
+    #myNavibar>li
+    {
+        margin-right: 100px;
+    }
+}
+@media (max-width:811px)
+{
+
+
+    #loginSpot
+    {
+        width: 60%;
+
+    }
+
+
+    #myNavibar>li
+    {
+        margin-right: 50px;
+    }
+
+}
+
+@media (max-width: 700px){
+    body{
+        width: 700px;
+    }
+    #myNavibar>li
+    {
+        margin-right: 30px;
+    }
 }
