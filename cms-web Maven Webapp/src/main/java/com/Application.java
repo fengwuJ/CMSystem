@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.controller","com.service","com,entity","com,mapper"})
+@ComponentScan(basePackages = {"com"})
 @MapperScan(basePackages ={"com.mapper"})
 public class Application {
 	public static void main(String[] args) {
