@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-03-27 20:45:23
+Date: 2019-04-13 16:40:32
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -628,7 +628,7 @@ CREATE TABLE `work_file` (
   CONSTRAINT `work_file_work_info_FK` FOREIGN KEY (`work_name`, `cid`, `tid`) REFERENCES `work_info` (`work_name`, `cid`, `tid`),
   CONSTRAINT `work_info_stu_course_relsp_FK` FOREIGN KEY (`sid`, `cid`) REFERENCES `stu_course_relsp` (`sid`, `cid`),
   CONSTRAINT `work_info_teach_course_relsp_FK` FOREIGN KEY (`tid`, `cid`) REFERENCES `teach_course_relsp` (`tid`, `cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='作业信息表单';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='作业信息表单';
 
 -- ----------------------------
 -- Records of work_file
@@ -636,9 +636,11 @@ CREATE TABLE `work_file` (
 INSERT INTO `work_file` VALUES ('1', null, null, null, '2015214000', '040401', 't131000', '未提交', '二维数组中的查找');
 INSERT INTO `work_file` VALUES ('3', null, null, null, '2015214000', '040404', 't131006', '未提交', '替换空格');
 INSERT INTO `work_file` VALUES ('5', 'E:\\workspace\\Course%20Manage%20System\\cms-web%20Maven%20Webapp\\target\\classes\\static\\wfile\\040402\\2015214000\\时长.pdf', '2019-01-23', '2019-03-14', '2015214000', '040402', 't131000', '已提交', '替换空格');
-INSERT INTO `work_file` VALUES ('6', null, null, '2019-03-14', '2015214000', '040402', 't131000', '未提交', '斐波那契数列');
-INSERT INTO `work_file` VALUES ('7', null, null, null, '2015214000', '040402', 't131000', '未提交', '作业标题');
+INSERT INTO `work_file` VALUES ('6', null, null, null, '2015214000', '040402', 't131000', '未提交', '斐波那契数列');
+INSERT INTO `work_file` VALUES ('7', 'E:\\workspace\\Course%20Manage%20System\\cms-web%20Maven%20Webapp\\target\\classes\\static\\wfile\\040402\\2015214000\\作业标题.pdf', '2019-04-13', '2019-04-13', '2015214000', '040402', 't131000', '已提交', '作业标题');
 INSERT INTO `work_file` VALUES ('8', null, null, null, '2015214003', '040402', 't131000', '未提交', '作业标题');
+INSERT INTO `work_file` VALUES ('9', null, null, null, '2015214000', '040402', 't131000', '未提交', '作业测试标题');
+INSERT INTO `work_file` VALUES ('10', null, null, null, '2015214003', '040402', 't131000', '未提交', '作业测试标题');
 
 -- ----------------------------
 -- Table structure for work_info
@@ -656,7 +658,7 @@ CREATE TABLE `work_info` (
   KEY `work_info_teacher_FK` (`tid`),
   CONSTRAINT `work_info_course_info_FK` FOREIGN KEY (`cid`) REFERENCES `course_info` (`id`),
   CONSTRAINT `work_info_teacher_FK` FOREIGN KEY (`tid`) REFERENCES `teacher` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='作业信息记录';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='作业信息记录';
 
 -- ----------------------------
 -- Records of work_info
@@ -667,3 +669,4 @@ INSERT INTO `work_info` VALUES ('3', '斐波那契数列', '大家都知道斐�
 INSERT INTO `work_info` VALUES ('4', '斐波那契数列', '大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）', '040402', 't131000');
 INSERT INTO `work_info` VALUES ('5', '替换空格', '请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。', '040402', 't131000');
 INSERT INTO `work_info` VALUES ('13', '作业标题', '\n				    作业内容\n				  ', '040402', 't131000');
+INSERT INTO `work_info` VALUES ('14', '作业测试标题', '这是作业内容', '040402', 't131000');

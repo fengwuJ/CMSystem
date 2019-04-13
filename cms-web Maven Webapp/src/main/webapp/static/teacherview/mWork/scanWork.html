@@ -53,10 +53,15 @@
 						$("#status").text(row.status);
 						$("#wtitle").text(row.title);
 						$("#wcontent").text(data);
-						if(row.status == "未提交"){
+						
+						if(row.status == "未提交" || row.ctime != null){
 							$("#downloadFile").prop('disabled',true);
+							$("#preview").hide();
+							$("#finish").hide();
 						}else{
 							$("#downloadFile").prop('disabled',false);
+							$("#preview").show();
+							$("#finish").show();
 						}
 					}
 				});
@@ -70,6 +75,7 @@
 					form.append($("<input></input>").attr("type", "hidden").attr("name", "sid").attr("value", sid));
 					form.append($("<input></input>").attr("type", "hidden").attr("name", "workName").attr("value", workName));
 					form.appendTo('body').submit().remove();
+					$("#record").click();
 				});
 				
 				$("#preview").click(function(){
@@ -91,6 +97,7 @@
 						cache : false, // true代表缓存,缓存后再次加载会快很多 false代表不缓存 
 						success : function(data) {
 							alert(data);
+							$("#record").click();
 						}
 					});
 				});
@@ -142,6 +149,11 @@
 							align : 'center',
 							valign : 'middle'
 						}, {
+							field : 'ctime',
+							title : '批改时间',
+							align : 'center',
+							valign : 'middle'
+						},{
 							title : "操作",
 							align : 'center',
 							valign : 'middle',

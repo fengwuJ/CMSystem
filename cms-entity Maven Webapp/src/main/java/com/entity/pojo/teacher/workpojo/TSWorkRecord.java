@@ -9,7 +9,14 @@ public class TSWorkRecord {
 	private String title;
 	private Date time;
 	private String status;
+	private Date ctime;
 	
+	public Date getCtime() {
+		return ctime;
+	}
+	public void setCtime(Date ctime) {
+		this.ctime = ctime;
+	}
 	public int getSeqNumber() {
 		return seqNumber;
 	}
