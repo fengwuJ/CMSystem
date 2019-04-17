@@ -3,6 +3,7 @@ package com.service.serviceInterface.teacher.exam;
 import java.util.List;
 import java.util.Map;
 
+import com.entity.exam.ExamInfo;
 import com.entity.exam.ExamRecord;
 import com.entity.exam.ShortAnswer;
 import com.entity.exam.SingleChoice;
@@ -30,5 +31,9 @@ public interface TeacherExamServiceInf {
 	Map<String, Object> searchSingleExam(String sid, String examName);
 
 	String updateSAandTotalGoal(String sid, String tid, String cid, String examName, int shortGoal, int totalGoal);
+
+	List<ExamInfo> getExamList(String tid,int offset,int pageSize,String cid);
+
+	int getExamTotalNumberById(String tid,String cid);
 
 }

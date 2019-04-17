@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -119,5 +120,10 @@ public class FileUtils {
 		        
 			}
 		}
+	}
+
+	public static void getPdF(Map<String, Object> map, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		
 	}
 }

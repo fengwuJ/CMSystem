@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.entity.course.CourseInfo;
+import com.entity.exam.ExamInfo;
 import com.entity.exam.ExamRecord;
 import com.entity.exam.ExamShortAnswer;
 import com.entity.exam.ExamSingleChoice;
 import com.entity.exam.ShortAnswer;
 import com.entity.exam.SingleChoice;
 import com.entity.exam.StuExamShortAnswer;
+import com.entity.userInfo.TeacherInfo;
 
 public interface TeacherExamMapper {
 
@@ -81,6 +84,18 @@ public interface TeacherExamMapper {
 
 	//更新试卷批改状态
 	void updateExamStatus(@Param("examName")String examName, @Param("status")String status);
+
+	List<ExamInfo> getExamList(@Param("tid")String tid,@Param("offset")int offset,@Param("pageSize")int pageSize,@Param("cid")String cid);
+
+	int getExamTotalNumberById(@Param("tid")String tid,@Param("cid")String cid);
+
+	TeacherInfo getTeacherInfoById(@Param("tid")String tid);
+
+	CourseInfo getCourseInfoById(@Param("cid")String cid);
+
+	List<ExamSingleChoice> getExamSingleChoiceByName(@Param("examName")String examName);
+
+	List<ExamShortAnswer> getExamShortAnswerByName(@Param("examName")String examName);
 
 	
 }

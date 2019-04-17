@@ -182,4 +182,68 @@
 			exam_name = #{examName}
 		</update>
 		
+		<select id="getExamList" resultMap="examInfoMap">
+			select exam_name,time from exam_info where tid = #{tid} and cid = #{cid} limit #{offset},#{pageSize}
+		</select>
+		
+		<resultMap id="examInfoMap" type="com.entity.exam.ExamInfo">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="examName" column="exam_name"/>
+		  <result property="status" column="status"/>
+		  <result property="time" column="time"/>
+		  <result property="cid" column="cid"/>
+		  <result property="tid" column="tid"/>
+		</resultMap>
+		
+		<select id="getExamTotalNumberById" resultType="java.lang.Integer">
+			select count(*) from exam_info where tid = #{tid} and cid = #{cid}
+		</select>
+		
+		<!-- 以下为导出pdf的关联数据 -->
+		<select id="getTeacherInfoById" resultMap="teacherInfoMap">
+			select * from teacher where id = #{tid}
+		</select>
+		
+		<select id="getCourseInfoById" resultMap="courseInfoMap">
+			select * from course_info where id = #{cid}
+		</select>
+		
+		<select id="getExamSingleChoiceByName" resultMap="examSingleChoiceMap">
+			select * from exam_single_choice where exam_name = #{examName}
+		</select>
+		
+		<select id="getExamShortAnswerByName" resultMap="examShortAnswerMap">
+			select * from exam_short_answer where exam_name = #{examName}
+		</select>
+		
+		<resultMap id="teacherInfoMap" type="com.entity.userInfo.TeacherInfo">
+			<id property="seqNumber" column="seq_number"/>
+		 	<result property="id" column="id"/>
+		  	<result property="name" column="name"/>
+		  	<result property="email" column="email"/>
+		  	<result property="phoneNumber" column="phone_number"/>
+		</resultMap>
+		
+		<resultMap id="courseInfoMap" type="com.entity.course.CourseInfo">
+			<id property="seqNumber" column="seq_number"/>
+		 	<result property="id" column="id"/>
+		  	<result property="name" column="name"/>
+		</resultMap>
+		
+		<resultMap id="examSingleChoiceMap" type="com.entity.exam.ExamSingleChoice">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="title" column="title"/>
+		  <result property="aOption" column="a_option"/>
+		  <result property="bOption" column="b_option"/>
+		  <result property="cOption" column="c_option"/>
+		  <result property="dOption" column="d_option"/>
+		   <result property="rightChoice" column="right_choice"/>
+		</resultMap>
+		
+		<resultMap id="examShortAnswerMap" type="com.entity.exam.ExamShortAnswer">
+		  <id property="seqNumber" column="seq_number"/>
+		  <result property="title" column="title"/>
+		  <result property="answer" column="answer"/>
+		</resultMap>
+		
     </mapper>

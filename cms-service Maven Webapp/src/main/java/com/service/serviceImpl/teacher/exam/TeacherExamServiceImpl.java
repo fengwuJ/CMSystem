@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.entity.course.CourseInfo;
+import com.entity.exam.ExamInfo;
 import com.entity.exam.ExamRecord;
 import com.entity.exam.ExamShortAnswer;
 import com.entity.exam.ExamSingleChoice;
@@ -232,5 +233,16 @@ public class TeacherExamServiceImpl implements TeacherExamServiceInf{
 			result = "服务器出现未知错误，请稍后重试";
 		}
 		return result;
+	}
+
+	@Override
+	public List<ExamInfo> getExamList(String tid,int offset,int pageSize,String cid) {
+		List<ExamInfo> list = teacherExamMapper.getExamList(tid,offset,pageSize,cid);
+		return list;
+	}
+
+	@Override
+	public int getExamTotalNumberById(String tid,String cid) {
+		return teacherExamMapper.getExamTotalNumberById(tid,cid);
 	}
 }

@@ -7,7 +7,7 @@ public class ExamInfo {
 	private int seqNumber;
 	private String examName;
 	private String status;
-	private Timestamp time;
+	private Date time;
 	private String cid;
 	private String tid;
 	/**
@@ -32,7 +32,7 @@ public class ExamInfo {
 	/**
 	 * @return the time
 	 */
-	public Timestamp getTime() {
+	public Date getTime() {
 		return time;
 	}
 	/**
@@ -69,7 +69,7 @@ public class ExamInfo {
 	/**
 	 * @param time the time to set
 	 */
-	public void setTime(Timestamp time) {
+	public void setTime(Date time) {
 		this.time = time;
 	}
 	/**

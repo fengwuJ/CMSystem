@@ -6,20 +6,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.entity.course.CourseInfo;
+import com.entity.exam.ExamInfo;
 import com.entity.exam.ExamRecord;
+import com.entity.exam.ExamShortAnswer;
+import com.entity.exam.ExamSingleChoice;
 import com.entity.exam.ShortAnswer;
 import com.entity.exam.SingleChoice;
 import com.entity.pojo.teacher.examPojo.TExamRecordPojo;
+import com.entity.userInfo.TeacherInfo;
 import com.mapper.teacher.exam.TeacherExamMapper;
 import com.service.serviceInterface.teacher.exam.TeacherExamServiceInf;
+import com.utils.FileUtils;
+
+import io.lettuce.core.output.SocketAddressOutput;
 
 @Controller
 @RequestMapping("/static/teacherview/mExam")
@@ -113,6 +123,33 @@ public class TeachExamController {
 			teacherExamMapper.updateExamStatus(examName,"已批改");
 		}
 		return result;
+	}
+	
+	//获取教师试卷列表
+	@RequestMapping("/getExamList")
+	@ResponseBody
+	public Map<String, Object> getExamList(String tid,int pageSize,int offset,String cid){
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<ExamInfo> list = tesInf.getExamList(tid,offset,pageSize,cid);
+		int count = tesInf.getExamTotalNumberById(tid,cid);
+		map.put("rows", list);
+		map.put("total",count);
+		return map;
+	}
+	
+	@RequestMapping("/getPdf")
+	@ResponseBody
+	public void getPdf(String tid,String examName,String cid,HttpServletResponse response){
+		Map<String, Object> map = new HashMap<String, Object>();
+		TeacherInfo teacherInfo = teacherExamMapper.getTeacherInfoById(tid);
+		CourseInfo courseInfo = teacherExamMapper.getCourseInfoById(cid);
+		List<ExamSingleChoice> examSingleChoiceList = teacherExamMapper.getExamSingleChoiceByName(examName);
+		List<ExamShortAnswer> examShortAnswerList = teacherExamMapper.getExamShortAnswerByName(examName);
+		map.put("teacherInfo",teacherInfo);
+		map.put("courseInfo",courseInfo);
+		map.put("examSingleChoiceList",examSingleChoiceList);
+		map.put("examShortAnswerList",examShortAnswerList);
+		FileUtils.getPdF(map,response);
 	}
 	
 }
