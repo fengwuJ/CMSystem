@@ -1,5 +1,6 @@
 package com.controller.teacher.exam;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.entity.exam.ShortAnswer;
 import com.entity.exam.SingleChoice;
 import com.entity.pojo.teacher.examPojo.TExamRecordPojo;
 import com.entity.userInfo.TeacherInfo;
+import com.itextpdf.text.DocumentException;
 import com.mapper.teacher.exam.TeacherExamMapper;
 import com.service.serviceInterface.teacher.exam.TeacherExamServiceInf;
 import com.utils.FileUtils;
@@ -149,7 +151,15 @@ public class TeachExamController {
 		map.put("courseInfo",courseInfo);
 		map.put("examSingleChoiceList",examSingleChoiceList);
 		map.put("examShortAnswerList",examShortAnswerList);
-		FileUtils.getPdF(map,response);
+		try {
+			FileUtils.getPdF(examName,map,response);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
